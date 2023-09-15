@@ -1,0 +1,43 @@
+Повторяющиеся элементы работающие на каждой странице
+
+- Сделаем один класс, в который будем добавлять переменные, которые будут видны на всех страницахЖ
+
+	php artisan make:provider ViewServiceProvider
+
+- После создания его надо зарегистрировать в config/app.php в секции: 'providers'
+
+	App\Providers\ViewServiceProvider::class,
+
+- Создадим новую директорию(папку) app/ViewComposers в которой будут классы, которые нам добавляют переменные:
+	например класс CategoriesComposer.php будет добавлять переменную $categories:
+
+		<?php
+
+		namespace App\ViewComposers;
+
+		use App\Models\Category;
+		use Illuminate\View\View;
+
+		// Laravel: интернет магазин ч.31: ViewComposer, Collection (map, flatten, take, mapToGroups)
+
+		/** 
+		 * Класс отвечает за добавление категорй
+		 */
+		class CategoriesComposer
+		{
+			public function compose(View $view)
+			{
+				$categories = Category::get();
+				$view->with('categories', $categories);
+			}
+		}
+
+- Зарегистрируем класс в ViewServiceProvider.php:
+
+		public function boot()
+		{
+			// добавим переменную (здесь- категории) для всех страниц в указанных шаблонах
+			View::composer(['layouts.master', 'categories'], 'App\ViewComposers\CategoriesComposer');
+		}
+
+- Выводим пременные в шаблонах как обычно (в цикле или непосредственно)

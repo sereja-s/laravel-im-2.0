@@ -1,0 +1,41 @@
+- Создадим класс, который будет управлять отправкой сообщений:
+	php artisan make:mail OrderCreated
+
+- Для тестов в файле: .env 
+	MAIL_MAILER=smtp // smtp меняем на log
+
+	и удаляем следующие строки:
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"
+
+- После отправки оформления заказа, по адресу: storage\log\laravel.log придёт сообщение с информацией и содержанием вида:
+	order_created.blade.php Например:
+
+		[2023-09-09 14:48:20] local.DEBUG: Message-ID: <47e5aed6a10b072d862819629d76e5b3@127.0.0.1>
+		Date: Sat, 09 Sep 2023 14:48:19 +0000
+		Subject: Order Created
+		From: Example <hello@example.com>
+		To: mail@mail.com
+		MIME-Version: 1.0
+		Content-Type: text/html; charset=utf-8
+		Content-Transfer-Encoding: quoted-printable
+
+		test отправки товара
+
+|| Если показывает ошибку - возможно она закешировалась Чистить кеш можно командами:
+	php artisan cache:clear
+	php artisan config:clear
+	php artisan config:cache
+
+	php artisan view:clear
+
+- в классе: Basket в методе сохранения заказа: saveOrder укажем куда и кому отправить сообщениеЖ
+	Mail::to($email)->send(new OrderCreated($name, $this)); 
+	// при создании нового объекта класса, указали параметры которые хотим передать в его метод-конструктор
+
+	- в конструкторе класса: OrderCreated принимаем их обрабатываем и передаёьм в шаблон сообщения о заказе

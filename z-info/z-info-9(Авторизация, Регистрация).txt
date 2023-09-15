@@ -1,0 +1,5 @@
+Чтобы появились все нужные контроллеры и виды: https://github.com/laravel/ui?ysclid=llcn4b7n2c909461259
+
+composer require laravel/ui
+php artisan ui bootstrap --auth
+npm install

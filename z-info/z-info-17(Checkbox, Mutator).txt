@@ -1,0 +1,27 @@
+Mutator- функция, которая будет вызываться перед сохранением атрибута товара (здесь- new, hit, recommendet)
+	(опишем такие функции для каждого из них с соответствующей модели (здесь- Product))
+|| при создании функции-mutator действует правило её именования начинается с слова: set далее без пробела идёт название
+|| атрибута, для которого она создаётся (с большой буквы), заканчиваем название словом: Attribute В параметры 
+|| передаём значение в момент сохранения
+
+	/** 
+	 * Метод-Mutator вызывается перед сохранением атрибута товара: new
+	 */
+	public function setNewAttribute($value)
+	{
+		$this->attributes['new'] = $value === 'on' ? 1 : 0;
+	}
+	/** 
+	 * Метод-Mutator вызывается перед сохранением атрибута товара: hit
+	 */
+	public function setHitAttribute($value)
+	{
+		$this->attributes['hit'] = $value === 'on' ? 1 : 0;
+	}
+	/** 
+	 * Метод-Mutator вызывается перед сохранением атрибута товара: recommend
+	 */
+	public function setRecommendAttribute($value)
+	{
+		$this->attributes['recommend'] = $value === 'on' ? 1 : 0;
+	}

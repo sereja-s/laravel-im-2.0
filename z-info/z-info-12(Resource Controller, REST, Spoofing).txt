@@ -1,0 +1,46 @@
+Создание ресурс-контроллера для работы в админке (в начале укажем namespace т.е. куда его поместить): 
+
+	php artisan make:controller Admin/CategoryController --resource
+
+
+1. В созданном по указанному пути ресурсном контроллере в сооответствующие методы будут добавлены необходимые параметры на вход
+(здесь- $request и(или) $id) Можно при создании ресурсного контроллера добавить название модели и по $id будут найдены соответствующие сущности модели и подставлены в параметры методов автоматически (если модели не найдено- покажет 404):
+
+	php artisan make:controller Admin/CategoryController --resource --model=Category
+
+
+2. В роутах(в web.php) пропишем созданный контроллер с указанием в начале, что он ресурсный (при этом все необходимые маршруты описанные в его методах будут прописаны автоматически)
+
+Действия, выполняемые контроллером ресурсов:
+==============================================================
+Verb	     |  URI	                | Action	|  Route Name
+==============================================================
+GET	     | /photos	             | index	  |  photos.index
+GET	     | /photos/create	    | create  |  photos.create
+POST	     | /photos	             | store	  |  photos.store
+GET	     | /photos/{photo}      | show	  |  photos.show
+GET	     | /photos/{photo}/edit |	edit	  |  photos.edit
+PUT/PATCH  | /photos/{photo}	    | update  |  photos.update
+DELETE	  | /photos/{photo}	    | destroy |  photos.destroy
+
+
+
+При попытке создать новую категорию выдало ошибку: Add [_token] to fillable property to allow mass assignment on [App\Models\Category]. Необходимо в соответствующей модели(здесь- Category), указать поля которые можно заполнять в форме (для создания(редактирования) категорий в админке):	
+
+	protected $fillable = ['code', 'name', 'description', 'image', 'name_en', 'description_en']; 
+
+
+В форме категорий реализован двойной функционал: редактирование и добавление категории и соответственно при отправке формы должны применяться разные методы Это реализовано при помощи технологии: Spoofing т.е. в форму добавляется метод, который сработает по условию:
+
+	@isset($category)
+			@method('PUT')
+			@endisset
+			@csrf
+			
+
+при этом в код автоматически добавится: input c type = "hidden" name = "method" value = "PUT"
+
+Аналогично делается для кнопки: удалить (прописывается в форме: 
+
+	@csrf
+	@method('DELETE'))

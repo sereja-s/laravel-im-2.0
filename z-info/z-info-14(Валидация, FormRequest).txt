@@ -1,0 +1,188 @@
+Добавим валидацию полей формы
+
+1. В соответствующем контроллере в методе: store() можно внести изменения:
+
+	public function store(Request $request)
+	{
+		// в обработку запроса с формы добавим валидацию (ч.14: Валидация, FormRequest):
+		$request->validate([
+
+			'code' => 'required',
+			'name' => 'required',
+			'description' => 'required',
+		]);
+
+		// сохраним запрос на сохранение категории в переменной
+		$params = $request->all();
+
+		unset($params['image']);
+
+		// для необязательного поля добавим проверку при получении запроса:
+		if ($request->has('image')) {
+
+			// получим путь к файлу, который был загружен (в форме это input c type = "file" name = "image") с указанием имени 
+			// папки в которой картинка будет сохранена (+ч.13: Storage)
+			$path = $request->file('image')->store('categories');
+
+			// если есть картинка, то добавим её в параметры (в соответствующую ячейку)
+			$params['image'] = $path;
+		}
+
+
+		Category::create($params);
+
+		return redirect()->route('categories.index');
+	}
+	
+
+2. Чтобы ошибки заполнения формы отображались, в форме(form.blade.php) укажем директиву error, которая позволяет обработать 
+ошибку для соответствующего поля и внутри в специальном классе укажем специальную переменную:
+
+	@error('code')
+
+	<div class="alert alert-danger">{{ $message }}</div>
+
+	@enderror
+
+
+ || Чтобы посмотреть все правила доступные в Laravel:
+	https://laravel.com/docs/8.x/validation#available-validation-rules
+
+	
+Далее правила валидации надо было бы добавить и метод: update(), но так делать не рекомендуется
+
+
+
+2.1 После добавления в форму директивы: error создадим специальный  request-класс:
+
+	php artisan make:request CategoryRequest
+
+
+2.2 Новый класс CategoryRequest передаём вместо Request в соответствующий контроллер в методы: store() и update(), а все 
+правила переносим в CategoryRequest в метод: rules()
+
+	Здесь в методе: authorize() вернём true (что означает, что мы хотим включить валидацию по указаным нами правилам) Иначе покажет ошибку
+
+2.3 Чтобы ошибки при заполнении формы выводились на русском языке, в CategoryRequest создади метод: messages():
+
+	public function messages()
+	{
+		return [
+
+			'required' => 'Поле :attribute обязательное для заполнения',
+			'min' => 'Поле :attribute должно иметь не менее :min символов',
+			// можем указать правило для конкретного поля
+			'code.min' => 'Поле код должно содержать не менее :min символов',
+		];
+	}
+
+2.4 В итоге методы имеют следующий вид:
+
+	public function store(CategoryRequest $request)
+	{
+		// сохраним запрос на сохранение категории в переменной
+		$params = $request->all();
+
+		unset($params['image']);
+
+		// для необязательного поля добавим проверку при получении запроса:
+		if ($request->has('image')) {
+
+			// получим путь к файлу, который был загружен (в форме это input c type = "file" name = "image") с указанием имени 
+			// папки в которой картинка будет сохранена (+ч.13: Storage)
+			$path = $request->file('image')->store('categories');
+
+			// если есть картинка, то добавим её в параметры (в соответствующую ячейку)
+			$params['image'] = $path;
+		}
+
+		Category::create($params);
+
+		return redirect()->route('categories.index');
+	}
+
+	public function update(CategoryRequest $request, Category $category)
+	{
+		$params = $request->all();
+
+		unset($params['image']);
+
+		// если в запросе с формы редактирования категории картинка есть, то мы должны её добавить, если нет, то мы недолжны старую удалять
+		if ($request->has('image')) {
+
+			// чтобы при редактировании категории загрузить новую картинку, старую нужно удалить (+ч.13: Storage)
+			Storage::delete($category->image);
+
+			$path = $request->file('image')->store('categories');
+
+			$params['image'] = $path;
+		}
+
+		$category->update($params);
+
+		return redirect()->route('categories.index');
+	}
+
+2.5 Для поля: code добавим новое правило: оно должно быть уникальным для таблицы: categories в которой должно быть поле: code
+
+	'code' => required|min:3|max:255|unique:categories,code;
+
+
+При этом нам необходимо чтобы правило уникальности дествовало только при сохдании новой категории и не работало при 
+сохранении старой
+
+|| посмотрим список всех маршрутов : php artisan route:list
+
+Если применяется маршрут: categories.store, то нам правило уникальности нужно, если - categories.update, то правило уникальности не нужно получим:
+
+	public function rules()
+	{
+		$rules = [
+
+			'code' => 'required|min:3|max:255',
+			'name' => 'required|min:3|max:255|',
+			'description' => 'required|min:5',
+		];
+
+		// посмотрим какие методы есть у данного класса:
+		//dd(get_class_methods($this->route()));
+
+		// применим метод: named(), он проверяет, что данный маршрут называется так, как тот, что передали ему в аргумент(на вход)
+		if ($this->route()->named('categories.store')) {
+
+			$rules['code'] .= '|unique:categories,code';
+		}
+
+		return $rules;
+	}
+
+
+2.6 Добавим функционал сохранения заполненых данных формы, после редиректа (например при выводе ошибок заполнения полей 
+формы) для этого в форме используем хелпер: old() В параметры ему нужно указать название поля Если форма испоьзуется для создания и для редактирования, необходимо указать 2-ой параметр с условием:
+
+	<input type="text" class="form-control" name="code" id="code" value="{{ old('code', isset($category) ? $category->code : null) }}">
+
+2.7 Окончательный вариант метода со всеми внесёнными правками:
+
+	public function rules()
+	{
+		$rules = [
+
+			'code' => 'required|min:3|max:255|unique:categories,code',
+			'name' => 'required|min:3|max:255|',
+			'description' => 'required|min:5',
+		];
+
+		// посмотрим какие методы есть у данного класса:
+		//dd(get_class_methods($this->route()));
+
+		// применим метод: named(), он проверяет, что данный маршрут называется так, как тот, что передали ему в аргумент(на вход)
+		if ($this->route()->named('categories.update')) {
+
+			// добавляем id(приходит из маршрута), для которого уникальность не должна проверяться
+			$rules['code'] .= ',' . $this->route()->parameter('category')->id;
+		}
+
+		return $rules;
+	}
+

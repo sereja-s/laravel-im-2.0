@@ -1,0 +1,11 @@
+Scope позволяет расширять запросы к БД Для этого в соответствующей модели создаётся:
+	public function scopeНазваниеГоворящееЧтоХотимИспользовать
+
+Пример: 
+	/** 
+	 * Метод-scope расширяет запрос (ч.25: Observer)
+	*/
+	public function scopeActiveByProductId($query, $productId)
+	{
+		return $query()->where('status', 0)->where('product_id', $productId);
+	}

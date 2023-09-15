@@ -1,0 +1,26 @@
+Чтобы сократить кол-во одинакового php-кода, в html-коде можно создавать директивы и указывать их вместо php-кода:
+
+1. Переходим в app/Providers/AppServiceProvider.php:
+
+	в методе укажем: 
+
+		public function boot()
+	{
+		// сформируем кастомный if, что бы в шаблонах проверять, авторизован ли пользователь и является ли он администратором (ч.15)
+		Blade::if('admin', function () {
+
+			return Auth::check() && Auth::user()->isAdmin();
+		});
+	}
+
+2. Теперь вместо условия: if можем оформить так: 
+
+					@admin
+
+						<a class="btn btn-success" type="button" href="{{ route('orders.show', $order) }}">Открыть</a>
+
+					@else
+
+						<a class="btn btn-success" type="button" href="{{ route('person.orders.show', $order) }}">Открыть</a>
+
+					@endadmin

@@ -1,0 +1,8 @@
+Полный набор файлов с ошибками: storage\logs\laravel.log 
+
+При выгрузке проекта на хостинг, вывод конкретной ошибки на экран необходимо отключить: в файле: .env установить
+ APP_DEBUG=false
+
+Laravel debugbar: https://github.com/barryvdh/laravel-debugbar?ysclid=lm3cbn46er598969639
+
+	-установка: composer require barryvdh/laravel-debugbar --dev

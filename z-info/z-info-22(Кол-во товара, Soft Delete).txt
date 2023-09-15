@@ -1,0 +1,88 @@
+Мягкое удаление: Soft Delete (при этом товар будет удаляться, но не совсем)
+
+	-добавляем новую миграцию для необходимой таблицы (здесь- товары):
+		 php artisan make:migration alter_table_products_count --table=products
+
+	-в её методах указываем:
+		public function up()
+		{
+			Schema::table('products', function (Blueprint $table) {
+				
+				$table->softDeletes(); // метод добавит колонку: deleted_at с типом данных: timestamp
+			});
+		}
+
+		public function down()
+		{
+			Schema::table('products', function (Blueprint $table) {
+
+				
+				$table->dropColumn('deleted_at');
+			});
+		}
+
+	-в соответствующей модели (здесь- Product) добавляем трейт (для расширения возможностей класса): 
+		use SoftDeletes;
+
+	|| Теперь при удалении товара, он будет скрыт на сайте и в заказах, которых он был, но останется в БД с меткой времени когда он был удалён
+
+	- Сделаем изменения в OrderController:
+
+	/** 
+	 * Метод покажет таблицу одного заказа
+	 * (+ч.15: Blade Custom Directive)
+	 */
+	public function show(Order $order)
+	{
+		// чтобы получить в заказе продукты скрытые после удаления (с применением трейта Soft Delete) достроим запрос 
+		//(добавляем скобки к св-ву котрому обращаемся) и затем вызываем метод: withTrashed() и затем метод: get()
+		// (+ч.22: Кол-во товара, Soft Delete)
+		$products = $order->products()->withTrashed()->get();
+
+		return view('auth.orders.show', compact('order', 'products'));
+	}
+
+	|| Теперь когда мы передали в вид $products, будем обрабатывать её вместо $order->products Заказ будет виден в админке даже если товар удалён(скрыт) из показа
+
+	- Для корректного подсчёта суммы заказа в модели: Order в соответствующем методе выполним аналогичные изменения:
+
+	/** 
+	 * Метод вернёт полную стоимость заказа в корзине за все продукты
+	 * (ч.20: Scope, Оптимизация запросов к БД)
+	 */
+	public function calculateFullSum()
+	{
+		$sum = 0;
+
+		// (+ч.22: Кол-во товара, Soft Delete)
+		foreach ($this->products()->withTrashed()->get() as $prodct) {
+
+			$sum += $prodct->getPriceForCount();
+		}
+
+		return $sum;
+	}
+
+	- Чтобы иметь возможность переходить по ссылке на удалённый(скрытый товар) из заказа внесём изменение в соответствующий
+	метод в MainController:
+
+	public function product($category, $productCode)
+	{
+		// (+ч.22: Кол-во товара, Soft Delete)
+		// добавим вызов метода показывать вместе с удалёнными
+		$product = Product::withTrashed()->where('code', $productCode)->first();
+
+		return view('product', compact('product'));
+	}
+
+	= чтобы удалённый(скрытый) товар был не доступен (выводилось сообщение) в модели: Product в соответствующем методе-проверке добавим	дополнительное условие:
+
+	/** 
+	 * Метод покажет, что товар доступен для заказа
+	 * (ч.22: Кол-во товара, Soft Delete)
+	 */
+	public function isAvailable()
+	{
+		// указали что товар должен быть не удалён(скрыт) и его кол-во больше 0
+		return !$this->trashed() && $this->count > 0;
+	}

@@ -1,0 +1,25 @@
+1, Observer- класс, который содержит методы реагирующие на определённое поведение модели Создадим его с указанием для какой
+модели он будет создан:
+	php artisan make:observer ProductObserver --model=Product
+
+Новый observer нужно зарегистрироать в Proviers/AppServiceProvider.php в public function boot() укажем:
+	Product::observe(ProductObserver::class);
+
+Затем в ProductObserver создадим метод, который будет срабатывать вовремя того, когда объект(здесь- продукт) был обновлён:
+	/**
+	 * Метод сработает, во время того как продукт будет обновлён (здесь- его количество)
+	 */
+	public function updating(Product $product)
+	{
+	}
+
+
+Создание класса почтового сообщения:
+	php artisan make:msil SendSubscriptionMessage
+		класс будет создан по адресу: app/Mail
+
+Валидация поля формы заполняемой клиентом:
+	php artisan make:request SubscriptionRequest
+		появится в папке: app/Http/Requests
+
+

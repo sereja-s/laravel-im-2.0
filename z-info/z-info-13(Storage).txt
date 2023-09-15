@@ -1,0 +1,57 @@
+Добавляем работу с картинками: 
+
+Laravel работает со всеми файловыми хранилищами через абстрактный класс(фасад): storage Настроим его
+
+В config->filesystems.php Там в ячейке: 'default' => env('FILESYSTEM_DRIVER', 'local'), а ячейке: disks возвращаемого массива описаны настройки для работы с storage 
+
+1. Чтобы файлы загружаемые в папку: storage были видны, необходимо создать аналогичную папку в папке: public которая будет
+ссылаться на основную:
+
+	php artisan storage:link
+
+
+Появится сообщение с указанием по какому пути создана папка и с какой папкой она соединена: The [D:\OpenServer\domains\laravel-im\public\storage] link has been connected to [D:\OpenServer\domains\laravel-im\storage\app/public]
+
+2. Что бы наши файлы сохранялись это надо указать в соответствующем контроллере админки в методе: store()
+
+		public function store(Request $request)
+	{
+		// получим путь к файлу, который был загружен (в форме это input c type = "file" name = "image") с указанием имени 
+		// папки в которой картинка будет сохранена (+ч.13: Storage)
+		$path = $request->file('image')->store('categories');
+
+		// сохраним запрос на сохранение категории в переменной
+		$params = $request->all();
+
+		// изменем данные в ячейке: image на полученные
+		$params['image'] = $path;
+
+		Category::create($params);
+
+		return redirect()->route('categories.index');
+	}
+	
+
+3. Далее в файле .env чтобы изменить настройки по умолчанию в конце укажем: FILESYSTEM_DRIVER=public
+
+	здесь также надо изменить значение настройки: APP_URL=http://localhost на APP_URL=http://127.0.0.1:8000 (адрес по которому открывается наш сайт)
+
+4. Чтобы картинка отображалась надо в соответствующих файлах в views	указать путь к ней: img src="{{ Storage::url($category->image) }}">
+
+5. 2. Что бы наши файлы редактировались это надо указать в соответствующем контроллере админки в методе: update()
+
+	public function update(Request $request, Category $category)
+	{
+		// чтобы при редактировании категории загрузить новую картинку, старую нужно удалить (+ч.13: Storage)
+		Storage::delete($category->image);
+
+		$path = $request->file('image')->store('categories');
+
+		$params = $request->all();
+
+		$params['image'] = $path;
+
+		$category->update($params);
+
+		return redirect()->route('categories.index');
+	}

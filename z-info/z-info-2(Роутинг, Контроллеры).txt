@@ -1,0 +1,4 @@
+Создание контроллера: php artisan make:controller MainController
+Контроллер с указанным названием разместится по адресу: app\Http\Controllers
+
+Пишем там новый метод и регистрируем его в routes\web.php: Route::get('/', [MainController::class, 'index']);

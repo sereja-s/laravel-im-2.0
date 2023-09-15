@@ -1,0 +1,66 @@
+// посмотреть все методы класса для указаного объекта
+		dd(get_class_methods($request));
+
+Добавление постраничной навигации (здесь- для товаров каталога): 
+	- вместо $products = Product::get() запишем $products = Product::paginate(7); и получим по 7-мь товаров на странице
+	- на странице вывода товара внизу укажем: {{ $products->links('pagination::bootstrap-4') }} Здесь указали тип 
+	используемого шаблона- bootstrap-4
+
+Функционал постраничной навигации(пагинации) описан для товаров в соответствующем методе в MainController.php (запрос с формы фильтров приходит сюда) Таеже прописывается соответствующие конструкции и значения в views товаров Также в методе описан функционал фильтрации товаро по цене и лейблам:
+
+	public function products(Request $request)
+	{
+		// посмотреть все методы класса для указаного объекта
+		//dd(get_class_methods($request));
+
+		//dd($request->all());
+		$productsQuery = Product::query();
+
+		// Добавим обработку фильтров (+ч.18: Pagination, QueryBuilder, Фильтры): 
+		if ($request->filled('min_price')) {
+
+			$productsQuery->where('price', '>=', $request->min_price);
+		}
+
+		if ($request->filled('max_price')) {
+
+			$productsQuery->where('price', '<=', $request->max_price);
+		}
+
+		foreach (['hit', 'new', 'recommend'] as $field) {
+
+			if ($request->has($field)) {
+
+				$productsQuery->where($field, 1);
+			}
+		}
+
+		$productsAll = Product::get();
+		//$products = Product::paginate(12);
+
+		// Добавим пагинацию, (+ч.18: Pagination, QueryBuilder, Фильтры):
+		// метод: withPath() сохраняет строку запрса с фильтрами в адресе при переходе со страницы на страницу		
+		$products = $productsQuery->paginate(3)->withPath("?" . $request->getQueryString());		
+
+		return view('products', compact('products', 'productsAll'));
+	}
+
+Далее необходимо сделать проверку(валидацию) при фильтрации товаров и вывод сообщений об ошибке:
+	- php artisan make:request ProductsFilterRequest 
+	- созданный класс передаём в метод вместо стандартного класса с запросом: 
+	public function products(ProductsFilterRequest $request)
+	- теперь в классе: ProductFilterRequest мы можем реализовать все правила, которые должны работать для данного запроса:
+	 	1. сначала устанавливаем значение true в методе:
+				public function authorize()
+     			{
+     			    return true;
+     			}
+		2. опишем необходимые правила:
+				public function rules()
+				{
+					return [
+						'min_price' => 'nullable|numeric|min:0',
+						'max_price' => 'nullable|numeric|min:0',
+					];
+				}
+Добаляем пагинацию в админке аналогично
