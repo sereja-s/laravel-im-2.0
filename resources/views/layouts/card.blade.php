@@ -43,11 +43,9 @@
 
 	<div class="product-detalis text-center" style="margin-top: 3px;">
 		<!-- вместо непосредственного получения сатегории, применим матод: category() в модели: Product реализующему связь таблиц и через продукт обратимся уже не к методу, а к одноимённму свойству -->
-		<h4>{{ $product->name }}<br><!-- ( {{ $product->getCategory()->name }} ) -->( {{ $product->category->name }} )</h4>
+		<h4>{{ $product->name }}<br>( {{ $product->category->name }} )</h4>
 
-		<!-- 	@isset($category)
-	{{ $category->name }}
-	@endisset -->
+
 
 		<!-- <span class="discount">$63.00</span> -->
 		<span class="current">{{ $product->price }}руб.</span>

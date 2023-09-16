@@ -1,0 +1,26 @@
+php artisan make:controller Admin/PropertyController --resource --model=Property
+
+В web.php добавим: Route::resource('properties', PropertyController::class);
+	Можно проверить что добавились нужные маршруты:  php artisan route:list                              - все маршруты
+																	 php artisan route:list --path=admin                 - уточняем
+																	 php artisan route:list --path=admin/prop
+
+Создаём виды и выводим их в соответствующем контроллере
+
+Т.к. в форме свойства есть обязательное поле, делаем валидацию:
+	php artisan make:request PropertyRequest
+		В нем обязательно указываем: 
+		public function authorize()
+      {
+          return true;
+      }
+
+		также необходимо описать правила валидации полей при заполнении:
+			public function rules()
+	      {
+	      	return [
+	      		'name' => 'required'
+	      	];
+	      }
+
+Подставим PropertyRequest вместо Request в методы: store и updste в PropertyController

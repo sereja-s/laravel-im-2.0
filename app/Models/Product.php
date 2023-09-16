@@ -17,19 +17,19 @@ class Product extends Model
 		'description_en', 'count',
 	];
 
-	public function getCategory()
-	{
-		// получаем все записи таблицы: Категории
-		$categories = Category::where('id', $this->category_id)->get();
+	//public function getCategory()
+	//{
+	// получаем все записи таблицы: Категории
+	//$categories = Category::where('id', $this->category_id)->get();
 
 
-		// получаем одну запись таблицы: Категории:
+	// получаем одну запись таблицы: Категории:
 
-		//$category = Category::where('id', $this->category_id)->first();
+	//$category = Category::where('id', $this->category_id)->first();
 
-		// тоже самое можно записать так и сразу вернуть результат:
-		return Category::find($this->category_id);
-	}
+	// тоже самое можно записать так и сразу вернуть результат:
+	//return Category::find($this->category_id);
+	//}
 
 	//====================================================================================================================//
 
@@ -40,6 +40,24 @@ class Product extends Model
 	{
 
 		return $this->belongsTo(Category::class);
+	}
+
+	/** 
+	 * Метод реализует связь продукта с товарными предложениями
+	 * (ч.32: Товарные предложения)
+	 */
+	public function skus()
+	{
+		return $this->hasMany(Sku::class);
+	}
+
+	/** 
+	 * Метод реализует связь продукта со свойствами
+	 * (ч.32: Товарные предложения.)
+	 */
+	public function properties()
+	{
+		$this->belongsToMany(Property::class);
 	}
 
 	/** 
