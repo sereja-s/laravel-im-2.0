@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BasketController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Person\OrderController as PersonOrderController;
+use App\Http\Controllers\SkuController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -68,8 +69,9 @@ Route::middleware(['auth'])->group(function () {
 
 			Route::resource('categories', CategoryController::class);
 			Route::resource('products', ProductController::class);
+			Route::resource('products/{product}/skus', SkuController::class);
 			Route::resource('properties', PropertyController::class);
-			Route::resource('property-options', PropertyOptionController::class);
+			Route::resource('properties/{property}/property-options', PropertyOptionController::class);
 		});
 	});
 

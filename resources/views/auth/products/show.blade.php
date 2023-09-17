@@ -59,10 +59,10 @@
 				</td>
 			</tr>
 
-			<tr>
+			<!-- <tr>
 				<td>Цена</td>
 				<td>{{ $product->price }} руб.</td>
-			</tr>
+			</tr> -->
 
 		</tbody>
 	</table>

@@ -1,22 +1,26 @@
 @extends('auth.layouts.master')
 
-@section('title', 'Варианты свойств')
+@section('title', 'Значения свойства')
 
 @section('content')
 <div class="col-md-12">
-	<h1>Варианты свойств</h1>
+
+	<h1>Значения свойства: {{ $property->name }}</h1>
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>
 					#
 				</th>
-				<th>
-					Свойство
-				</th>
+
 				<th>
 					Название
 				</th>
+
+				<th>
+					Для свойства:
+				</th>
+
 				<th>
 					Действия
 				</th>
@@ -25,13 +29,16 @@
 			<tr>
 				<td>{{ $propertyOption->id }}</td>
 
-				<td>{{ $propertyOption->name }}</td>
+				<td style="font-size: 16px;">{{ $propertyOption->name }}</td>
+
+				<td>{{ $property->name }}</td>
+
 
 				<td>
 					<div class="btn-group" role="group">
-						<form action="{{ route('property-options.destroy', $propertyOption) }}" method="POST">
-							<a class="btn btn-success" type="button" href="{{ route('property-options.show', $propertyOption) }}">Открыть</a>
-							<a class="btn btn-warning" type="button" href="{{ route('property-options.edit', $propertyOption) }}">Редактировать</a>
+						<form action="{{ route('property-options.destroy', [$property, $propertyOption]) }}" method="POST">
+							<a class="btn btn-success" type="button" href="{{ route('property-options.show', [$property, $propertyOption]) }}">Открыть</a>
+							<a class="btn btn-warning" type="button" href="{{ route('property-options.edit', [$property, $propertyOption]) }}">Редактировать</a>
 							@csrf
 							@method('DELETE')
 							<input class="btn btn-danger" type="submit" value="Удалить">
@@ -53,6 +60,6 @@
 		}
 	</style>
 
-	<a class="btn btn-success" type="button" href="{{ route('properties.create') }}">Добавить вариант свойства</a>
+	<a class="btn btn-success" type="button" href="{{ route('property-options.create', $property) }}">Добавить значение свойства</a>
 </div>
 @endsection

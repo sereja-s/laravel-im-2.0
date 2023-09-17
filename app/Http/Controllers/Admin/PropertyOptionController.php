@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PropertyOptionRequest;
 use App\Models\Property;
 use App\Models\PropertyOption;
 use Illuminate\Http\Request;
@@ -16,11 +17,13 @@ class PropertyOptionController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index()
+	public function index(Property $property)
 	{
-		$propertyOptions = PropertyOption::paginate(10);
+		//$propertyOptions = PropertyOption::paginate(10);
 
-		return view('auth.property_options.index', compact('propertyOptions'));
+		$propertyOptions = PropertyOption::where('property_id', $property->id)->paginate(10);
+
+		return view('auth.property_options.index', compact('propertyOptions', 'property'));
 	}
 
 	/**
@@ -28,20 +31,26 @@ class PropertyOptionController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function create()
+	public function create(Property $property)
 	{
-		//
+		return view('auth.property_options.form', compact('property'));
 	}
 
 	/**
-	 * Store a newly created resource in storage.
+	 * Метод создаёт новое значение свойства преданного на вход при отправке запроса на на сохранение значения свойства из формы
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(Request $request)
+	public function store(PropertyOptionRequest $request, Property $property)
 	{
-		//
+		$params = $request->all();
+		$params['property_id'] = $request->property->id;
+
+		PropertyOption::create($params);
+
+		return redirect()->route('property-options.index', $property);
+		return redirect()->route('property-options.index', $property);
 	}
 
 	/**
@@ -50,9 +59,9 @@ class PropertyOptionController extends Controller
 	 * @param  \App\Models\PropertyOption  $propertyOption
 	 * @return \Illuminate\Http\Response
 	 */
-	public function show(PropertyOption $propertyOption)
+	public function show(Property $property, PropertyOption $propertyOption)
 	{
-		//
+		return view('auth.property_options.show', compact('propertyOption'));
 	}
 
 	/**
@@ -61,9 +70,9 @@ class PropertyOptionController extends Controller
 	 * @param  \App\Models\PropertyOption  $propertyOption
 	 * @return \Illuminate\Http\Response
 	 */
-	public function edit(PropertyOption $propertyOption)
+	public function edit(Property $property, PropertyOption $propertyOption)
 	{
-		//
+		return view('auth.property_options.form', compact('property', 'propertyOption'));
 	}
 
 	/**
@@ -73,9 +82,13 @@ class PropertyOptionController extends Controller
 	 * @param  \App\Models\PropertyOption  $propertyOption
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, PropertyOption $propertyOption)
+	public function update(PropertyOptionRequest $request, Property $property, PropertyOption $propertyOption)
 	{
-		//
+		$params = $request->all();
+
+		$propertyOption->update($params);
+
+		return redirect()->route('property-options.index', $property);
 	}
 
 	/**
@@ -84,8 +97,10 @@ class PropertyOptionController extends Controller
 	 * @param  \App\Models\PropertyOption  $propertyOption
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy(PropertyOption $propertyOption)
+	public function destroy(Property $property, PropertyOption $propertyOption)
 	{
-		//
+		$propertyOption->delete();
+
+		return redirect()->route('property-options.index', $property);
 	}
 }

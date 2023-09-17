@@ -28,8 +28,8 @@ class ProductRequest extends FormRequest
 			'code' => 'required|min:3|max:255|unique:products,code',
 			'name' => 'required|min:3|max:255|',
 			'description' => 'required|min:5',
-			'price' => 'required|numeric|min:1',
-			'count' => 'required|numeric|min:0',
+			/* 'price' => 'required|numeric|min:1',
+			'count' => 'required|numeric|min:0', */
 		];
 
 		// если товар имеет id в маршруте, значит он обновляется(редактируется) и уникальность поля проверять не надо

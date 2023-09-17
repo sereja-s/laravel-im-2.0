@@ -1,7 +1,7 @@
 @extends('auth.layouts.master')
 
 @isset($product)
-@section('title', 'Редактировать товар ' . $product->name)
+@section('title', 'Редактировать товар: ' . $product->name)
 @else
 @section('title', 'Создать товар')
 @endisset
@@ -9,7 +9,7 @@
 @section('content')
 <div class="col-md-12">
 	@isset($product)
-	<h1>Редактировать товар <b>{{ $product->name }}</b></h1>
+	<h1>Редактировать товар: <b>{{ $product->name }}</b></h1>
 	@else
 	<h1>Добавить товар</h1>
 	@endisset
@@ -64,7 +64,7 @@
 
 					@include('auth.layouts.error', ['fieldName' => 'description'])
 
-					<textarea name="description" id="description" cols="72" rows="7">@isset($product){{ $product->description }}@endisset</textarea>
+					<textarea style="padding: 7px;" name="description" id="description" cols="72" rows="7">@isset($product){{ $product->description }}@endisset</textarea>
 				</div>
 			</div>
 
@@ -79,27 +79,32 @@
 			</div>
 
 			<br>
+
+			<!-- ч.34: Plural & Singular -->
+
 			<div class="input-group row">
-				<label for="price" class="col-sm-2 col-form-label">Цена: </label>
-				<div class="col-sm-2">
+				<label for="category_id" class="col-sm-2 col-form-label">Свойства товара: </label>
+				<div class="col-sm-6">
 
-					@include('auth.layouts.error', ['fieldName' => 'price'])
+					@include('auth.layouts.error', ['fieldName' => 'property_id[]'])
 
-					<input type="text" class="form-control" name="price" id="price" value="@isset($product){{ $product->price }}@endisset">
+					<select name="property_id[]" multiple>
+
+						@foreach($properties as $property)
+
+						<option style="padding: 5px 15px 5px 10px;" value="{{ $property->id }}" @isset($product) @if($product->properties->contains($property->id))
+							selected
+							@endif
+							@endisset>{{ $property->name }}</option>
+
+						@endforeach
+					</select>
 				</div>
 			</div>
 			<br>
-			<div class="input-group row">
-				<label for="count" class="col-sm-2 col-form-label">Кол-во: </label>
-				<div class="col-sm-1">
 
-					@include('auth.layouts.error', ['fieldName' => 'count'])
 
-					<input type="text" class="form-control" name="count" id="count" value="@isset($product){{ $product->count }}@endisset">
-				</div>
-			</div>
 
-			<br>
 			@foreach ([
 			'hit' => 'Хит',
 			'new' => 'Новинка',

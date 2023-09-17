@@ -1,10 +1,10 @@
 @extends('auth.layouts.master')
 
-@section('title', 'Свойство: ' . $property->name)
+@section('title', 'Значение свойства: ' . $propertyOption->name)
 
 @section('content')
 <div class="col-md-12">
-	<h1>Категория {{ $property->name }}</h1>
+	<h1>Значение свойства: {{ $propertyOption->name }}</h1>
 	<table class="table">
 		<tbody>
 			<tr>
@@ -17,12 +17,17 @@
 			</tr>
 			<tr>
 				<td>ID</td>
-				<td>{{ $property->id }}</td>
+				<td>{{ $propertyOption->id }}</td>
+			</tr>
+
+			<tr>
+				<td>Свойство</td>
+				<td>{{ $propertyOption->property->name }}</td>
 			</tr>
 
 			<tr>
 				<td>Название</td>
-				<td>{{ $property->name }}</td>
+				<td>{{ $propertyOption->name }}</td>
 			</tr>
 
 

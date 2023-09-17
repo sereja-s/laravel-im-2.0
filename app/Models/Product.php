@@ -53,11 +53,13 @@ class Product extends Model
 
 	/** 
 	 * Метод реализует связь продукта со свойствами
-	 * (ч.32: Товарные предложения.)
+	 * (ч.32: Товарные предложения)
 	 */
 	public function properties()
 	{
-		$this->belongsToMany(Property::class);
+		// на вход 2- указываем название связующей таблицы (иначе по умолчанию требует таблицу: product_property) 
+		// (+ч.34: Plural & Singular)
+		return $this->belongsToMany(Property::class, 'property_product')->withTimestamps();
 	}
 
 	/** 

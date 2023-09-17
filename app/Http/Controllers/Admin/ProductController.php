@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,7 +35,10 @@ class ProductController extends Controller
 	{
 		$categories = Category::get();
 
-		return view('auth.products.form', compact('categories'));
+		// выбираем все свойства для показа в форме редактирования(создания) товара (+ч.34: Plural & Singular)
+		$properties = Property::get();
+
+		return view('auth.products.form', compact('categories', 'properties'));
 	}
 
 	/**
@@ -94,7 +98,10 @@ class ProductController extends Controller
 	{
 		$categories = Category::get();
 
-		return view('auth.products.form', compact('product', 'categories'));
+		// выбираем все свойства для показа в форме редактирования(создания) товара (+ч.34: Plural & Singular)
+		$properties = Property::get();
+
+		return view('auth.products.form', compact('product', 'categories', 'properties'));
 	}
 
 	/**
@@ -131,6 +138,9 @@ class ProductController extends Controller
 				$params[$fieldName] = 0;
 			}
 		}
+
+		// для продукта, используя связь, получим его свойства и синжронизируем то что у него было с тем, что пришло из запроса при редактировании
+		$product->properties()->sync($request->property_id);
 
 		$product->update($params);
 

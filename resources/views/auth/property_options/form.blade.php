@@ -1,23 +1,23 @@
 @extends('auth.layouts.master')
 
-@isset($property)
-@section('title', 'Редактировать свойство ' . $property->name)
+@isset($propertyOption)
+@section('title', 'Редактировать значение свойства ' . $propertyOption->name)
 @else
-@section('title', 'Добавить свойство')
+@section('title', 'Добавить значение свойства')
 @endisset
 
 @section('content')
 <div class="col-md-12">
-	@isset($property)
-	<h1>Редактировать свойство: <b>{{ $property->name }}</b></h1>
+	@isset($propertyOption)
+	<h1>Редактировать значение свойства: {{ $property->name }} - <b>{{ $propertyOption->name }}</b></h1>
 	@else
-	<h1>Добавить свойство</h1>
+	<h1>Добавить значение для свойства: {{ $property->name }}</h1>
 	@endisset
 
-	<form method="POST" enctype="multipart/form-data" @isset($property) action="{{ route('properties.update', $property) }}" @else action="{{ route('properties.store') }}" @endisset>
+	<form method="POST" enctype="multipart/form-data" @isset($propertyOption) action="{{ route('property-options.update', [$property, $propertyOption]) }}" @else action="{{ route('property-options.store', $property) }}" @endisset>
 		<div>
 
-			@isset($property)
+			@isset($propertyOption)
 			@method('PUT')
 			@endisset
 			@csrf
@@ -31,7 +31,7 @@
 					<div class="alert alert-danger">{{ $message }}</div>
 					@enderror
 
-					<input type="text" class="form-control" name="name" id="name" value="@isset($property){{ $property->name }}@endisset">
+					<input type="text" class="form-control" name="name" id="name" value="@isset($propertyOption){{ $propertyOption->name }}@endisset">
 				</div>
 			</div>
 
