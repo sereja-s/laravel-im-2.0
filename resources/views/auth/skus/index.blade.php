@@ -1,10 +1,11 @@
 @extends('auth.layouts.master')
 
-@section('title', 'Свойства')
+@section('title', 'Товарные предложения')
 
 @section('content')
 <div class="col-md-12">
-	<h1>Свойства</h1>
+	<h1>Товарные предложения</h1>
+	<h2>товар: {{ $product->name }}</h2>
 	<table class="table">
 		<tbody>
 			<tr>
@@ -12,24 +13,32 @@
 					#
 				</th>
 				<th>
-					Название
+					Товарное предложение (свойства:)
 				</th>
+
+				<th>Цена</th>
+				<th>Кол-во</th>
+
 				<th>
 					Действия
 				</th>
 			</tr>
-			@foreach($properties as $property)
+			@foreach($skus as $sku)
 			<tr>
-				<td>{{ $property->id }}</td>
 
-				<td>{{ $property->name }}</td>
+				<td>{{ $sku->id }}</td>
+
+				<td>{{ $sku->propertyOptions->map->name->implode(', ') }}</td>
+
+				<td>{{ $sku->price }}</td>
+				<td>{{ $sku->count }}</td>
 
 				<td>
 					<div class="btn-group" role="group">
-						<form action="{{ route('properties.destroy', $property) }}" method="POST">
-							<a class="btn btn-success" type="button" href="{{ route('properties.show', $property) }}">Открыть</a>
-							<a class="btn btn-warning" type="button" href="{{ route('properties.edit', $property) }}">Редактировать</a>
-							<a class="btn btn-primary" type="button" href="{{ route('property-options.index', $property) }}">Значения свойства</a>
+						<form action="{{ route('skus.destroy', [$product, $sku]) }}" method="POST">
+							<a class="btn btn-success" type="button" href="{{ route('skus.show', [$product, $sku]) }}">Открыть</a>
+							<a class="btn btn-warning" type="button" href="{{ route('skus.edit', [$product, $sku]) }}">Редактировать</a>
+
 							@csrf
 							@method('DELETE')
 							<input class="btn btn-danger" type="submit" value="Удалить">
@@ -42,7 +51,7 @@
 	</table>
 
 	<!--  пагинация -->
-	{{ $properties->links('pagination::bootstrap-4') }}
+	{{ $skus->links('pagination::bootstrap-4') }}
 
 	<style>
 		.pagination {
@@ -51,6 +60,6 @@
 		}
 	</style>
 
-	<a class="btn btn-success" type="button" href="{{ route('properties.create') }}">Добавить свойство</a>
+	<a class="btn btn-success" type="button" href="{{ route('skus.create', $product) }}">Добавить Sku</a>
 </div>
 @endsection

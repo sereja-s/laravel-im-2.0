@@ -1,41 +1,60 @@
 @extends('auth.layouts.master')
 
-@isset($property)
-@section('title', 'Редактировать свойство ' . $property->name)
+@isset($sku)
+@section('title', 'Редактировать Sku ' . товара: . $sku->product->name)
 @else
-@section('title', 'Добавить свойство')
+@section('title', 'Добавить Sku')
 @endisset
 
 @section('content')
 <div class="col-md-12">
-	@isset($property)
-	<h1>Редактировать свойство: <b>{{ $property->name }}</b></h1>
+	@isset($sku)
+	<h1>Редактировать Sku товара: <b>{{ $sku->product->name }}</b></h1>
 	@else
-	<h1>Добавить свойство</h1>
+	<h1>Добавить Sku</h1>
 	@endisset
 
-	<form method="POST" enctype="multipart/form-data" @isset($property) action="{{ route('properties.update', $property) }}" @else action="{{ route('properties.store') }}" @endisset>
+	<form method="POST" enctype="multipart/form-data" @isset($sku) action="{{ route('skus.update', [$product, $sku]) }}" @else action="{{ route('skus.store', $product) }}" @endisset>
 		<div>
 
-			@isset($property)
+			@isset($sku)
 			@method('PUT')
 			@endisset
 			@csrf
 
-			<br>
-			<div class="input-group row">
-				<label for="name" class="col-sm-2 col-form-label">Название: </label>
-				<div class="col-sm-6">
-
-					@error('name')
-					<div class="alert alert-danger">{{ $message }}</div>
-					@enderror
-
-					<input type="text" class="form-control" name="name" id="name" value="@isset($property){{ $property->name }}@endisset">
+			<div style="padding-bottom: 10px;" class="input-group row">
+				<label for="price" class="col-sm-2 col-form-label">Цена: </label>
+				<div class="col-sm-2">
+					@include('auth.layouts.error', ['fieldName' => 'price'])
+					<input type="text" class="form-control" name="price" value="@isset($sku){{ $sku->price }}@endisset">
 				</div>
 			</div>
-
+			<div class="input-group row">
+				<label for="count" class="col-sm-2 col-form-label">Кол-во: </label>
+				<div class="col-sm-2">
+					@include('auth.layouts.error', ['fieldName' => 'count'])
+					<input type="text" class="form-control" name="count" value="@isset($sku){{ $sku->count }}@endisset">
+				</div>
+			</div>
 			<br>
+
+			@foreach ($product->properties as $property)
+			<div class="input-group row">
+				<label for="property_id[{{ $property->id }}]" class="col-sm-2 col-form-label">{{ $property->name }}: </label>
+				<div style="padding-bottom: 20px;" class="col-sm-6">
+					<select name="property_id[{{ $property->id }}]" class="form-control">
+						<!-- если значения уже были(т.е. при редактировании) они подтянутся и подставятся в форму  -->
+						@foreach($property->propertyOptions as $propertyOption)
+						<option value="{{ $propertyOption->id }}" @isset($sku) @if($sku->propertyOptions->contains($propertyOption->id))
+							selected
+							@endif
+							@endisset
+							>{{ $propertyOption->name }}</option>
+						@endforeach
+					</select>
+				</div>
+			</div>
+			@endforeach
 
 			<button class="btn btn-success">Сохранить</button>
 		</div>

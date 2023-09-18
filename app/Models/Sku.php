@@ -25,6 +25,7 @@ class Sku extends Model
 	 */
 	public function propertyOptions()
 	{
-		return $this->belongsToMany(PropertyOption::class);
+		// вторым параметром передаём название соответствующей таблицы связи в БД (иначе по умолчанию требует: property_option_sku)
+		return $this->belongsToMany(PropertyOption::class, 'sku_property_option')->withTimestamps();
 	}
 }

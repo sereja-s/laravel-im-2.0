@@ -5,11 +5,12 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyOptionController;
+use App\Http\Controllers\Admin\SkuController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BasketController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Person\OrderController as PersonOrderController;
-use App\Http\Controllers\SkuController;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
