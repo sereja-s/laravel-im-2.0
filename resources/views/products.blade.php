@@ -111,14 +111,14 @@
 							</div>
 						</div>
 
-						@foreach($products as $product)
+						@foreach($skus as $sku)
 
-						@include('layouts.card', compact('product'))
+						@include('layouts.card', compact('sku'))
 
 						@endforeach
 
 
-						{{ $products->onEachSide(2)->links('pagination::bootstrap-4') }}
+						{{ $skus->onEachSide(2)->links('pagination::bootstrap-4') }}
 
 						<style>
 							.pagination {

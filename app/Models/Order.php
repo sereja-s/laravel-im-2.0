@@ -9,17 +9,26 @@ class Order extends Model
 {
 	use HasFactory;
 
-	protected $fillable = ['user_id'];
+	protected $fillable = ['user_id', 'currency_id', 'sum'];
 
 	/** 
 	 * Метод реализует связь заказов с продуктами
 	 */
-	public function products()
+	//public function products()
+	//{
+	// обращаемся к модели: Product (реализуем связь: многие-ко-многим через связующую таблицу: order_product) 
+	// Далее обращаемся к полю связующей таблицы: count (теперь сможем работать с этим полем в контроллере: BasketController)
+	// Также укажем что в связующей таблице нужно обновлять поля: created_at, updated_at
+	//return $this->belongsToMany(Product::class)->withPivot(['count', 'price'])->withTimestamps();
+	//}
+
+	// Laravel: интернет магазин ч.35: Eloquent: whereHas
+	/** 
+	 * Метод возвращает все товарные предложения, которые были заказаны (связь заказа с торговыми предложениями)
+	 */
+	public function skus()
 	{
-		// обращаемся к модели: Product (реализуем связь: многие-ко-многим через связующую таблицу: order_product) 
-		// Далее обращаемся к полю связующей таблицы: count (теперь сможем работать с этим полем в контроллере: BasketController)
-		// Также укажем что в связующей таблице нужно обновлять поля: created_at, updated_at
-		return $this->belongsToMany(Product::class)->withPivot('count')->withTimestamps();
+		return $this->belongsToMany(Sku::class)->withPivot(['count', 'price'])->withTimestamps();
 	}
 
 	/** 
@@ -40,9 +49,9 @@ class Order extends Model
 		$sum = 0;
 
 		// (+ч.22: Кол-во товара, Soft Delete)
-		foreach ($this->products()->withTrashed()->get() as $prodct) {
+		foreach ($this->skus()->withTrashed()->get() as $sku) {
 
-			$sum += $prodct->getPriceForCount();
+			$sum += $sku->getPriceForCount();
 		}
 
 		return $sum;

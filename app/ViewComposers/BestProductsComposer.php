@@ -39,7 +39,7 @@ class BestProductsComposer
 		// затем получим суммарное количество покупок для каждого товара в заказах
 
 		// В конце сортируем коллекцию, берём три самых продаваемых продукта, получим их ключи и положим в массив
-		$bestProductIds = Order::get()->map->products->flatten()->map->pivot->mapToGroups(function ($pivot) {
+		$bestProductIds = Order::get()->map->skus->flatten()->map->pivot->mapToGroups(function ($pivot) {
 
 			// по id продукта получим сколько этого продукта было куплено
 			return [$pivot->product_id => $pivot->count];

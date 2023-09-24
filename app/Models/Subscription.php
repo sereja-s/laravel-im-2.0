@@ -11,37 +11,38 @@ class Subscription extends Model
 {
 	use HasFactory;
 
-	protected $fillable = ['email', 'product_id'];
+	// +ч.35: Eloquent: whereHas
+	protected $fillable = ['email', 'sku_id'];
 
 	/** 
 	 * Метод-scope расширяет запрос (ч.25: Observer)
 	 */
-	public function scopeActiveByProductId($query, $productId)
+	public function scopeActiveBySkuId($query, $skuId)
 	{
-		return $query->where('status', 0)->where('product_id', $productId);
+		return $query->where('status', 0)->where('sku_id', $skuId);
 	}
 
 	/** 
-	 * Метод реализует связь подписки с продуктом (ч.25: Observer)
+	 * Метод реализует связь подписки с продуктом (ч.25: Observer. ч.35: Eloquent: whereHas)
 	 */
-	public function product()
+	public function sku()
 	{
-		return $this->belongsTo(Product::class);
+		return $this->belongsTo(Sku::class);
 	}
 
 	/** 
 	 * Метод выберет все подписки, которые были у пользователя, отправит пользователю email и обновит в подписках status = 1 
-	 * (ч.25: Observer)
+	 * (ч.25: Observer,ч.35: Eloquent: whereHas)
 	 */
-	public static function sendEmailBySubscription(Product $product)
+	public static function sendEmailBySubscription(Sku $sku)
 	{
-		// получим все подписки удовлетворяющие условию описанному в public function scopeActiveByProductId($query, $productId)
-		$subscriptions = self::activeByProductId($product->id)->get();
+		// получим все подписки удовлетворяющие условию описанному в public function scopeActiveBySkuId($query, $productId)
+		$subscriptions = self::activeBySkuId($sku->id)->get();
 
 		// пробежимся по каждой подписке, отправим сообщения, изменим статус:
 		foreach ($subscriptions as $subscription) {
 
-			Mail::to($subscription->email)->send(new SendSubscriptionMessage($product));
+			Mail::to($subscription->email)->send(new SendSubscriptionMessage($sku));
 
 			$subscription->status = 1;
 

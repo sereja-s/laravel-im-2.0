@@ -11,7 +11,8 @@
 				<h2 class="text-center">{{ $category->name }}</h2>
 			</div>
 			<p class="text-center">{{ $category->description }}</p>
-			<p class="text-center">( Количество товаров: {{$category->products->count()}} )</p>
+
+			<p class="text-center">( Количество товаров: {{ $category->products->map->skus->count() }} )</p>
 			<div class="col-lg-3 col-md-12 mb-lg-0 mb-5">
 
 				<!-- Filter section -->
@@ -168,9 +169,9 @@
 							</div>
 						</div>
 
-						@foreach($category->products as $product)
+						@foreach($category->products->map->skus->flatten() as $sku)
 
-						@include('layouts.card', compact('product'))
+						@include('layouts.card', compact('sku'))
 
 						@endforeach
 

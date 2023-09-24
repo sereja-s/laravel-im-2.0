@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', $product->name)
+@section('title', $skus->product->name)
 
 @section('content')
 
@@ -15,8 +15,8 @@
 						<div class="large-image swiper">
 							<div class="wrap swiper-wrapper">
 								<div class="swiper-slide item">
-									<a href="{{ Storage::url($product->image) }}" data-fslightbox="first-lightbox">
-										<img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
+									<a href="{{ Storage::url($skus->product->image) }}" data-fslightbox="first-lightbox">
+										<img src="{{ Storage::url($skus->product->image) }}" alt="{{ $skus->product->name }}" />
 									</a>
 								</div>
 								<div class="swiper-slide item">
@@ -57,7 +57,7 @@
 							<div class="wrap swiper-wrapper">
 								<div class="swiper-slide item">
 									<div class="thumb">
-										<img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
+										<img src="{{ Storage::url($skus->product->image) }}" alt="{{ $skus->product->name }}" />
 									</div>
 								</div>
 								<div class="swiper-slide item">
@@ -95,10 +95,10 @@
 			<!-- Product Details -->
 			<div class="col-md-6 col-12">
 				<div class="summary ps-md-4 ps-0">
-					<h3>{{ $product->name }}</h3>
+					<h3>{{ $skus->product->name }}</h3>
 					<div class="d-flex justify-content-between price-review mt-4">
 						<div class="d-flex">
-							<span class="price">{{ $product->price }} руб.</span>
+							<span class="price">{{ $skus->price }} руб.</span>
 							<div class="discount">
 								<div style="text-decoration: none;">цена со скидкой</div>
 								<div>-25%</div>
@@ -146,7 +146,7 @@
 						<span class="ps-3"> <i class="ri-checkbox-circle-line"></i></span>
 					</div>
 
-					@if($product->isAvailable())
+					@if($skus->isAvailable())
 
 					<div class="quentity mt-4 mb-4">
 						<div class="item">
@@ -159,9 +159,9 @@
 
 						<div class="addcart" style="padding-bottom: 15px;">
 
-							@if($product->isAvailable())
+							@if($skus->isAvailable())
 
-							<form action="{{ route('basket-add', $product) }}" method="POST">
+							<form action="{{ route('basket-add', $skus->product) }}" method="POST">
 
 								<button type="submit" class="btn-addcart">В корзину</button>
 
@@ -186,7 +186,7 @@
 
 
 
-							<form action="{{ route('subscription', $product) }}" method="post">
+							<form action="{{ route('subscription', $skus) }}" method="post">
 								@csrf
 								<input type="text" name="email" placeholder="ваша эл.почта">
 								<button style="border-radius: 5px;  padding: 3px 5px; background-color: #1288d7; border: none; color: white; font-size: 14px" type="submit">Отправить</button>
@@ -259,28 +259,36 @@
 				<div class="product list-content active" data-tab="tab1">
 					<div class="row">
 						<div class="mb-5">
-							<h4>The Sweater is Tosca</h4>
-							<p class="lh-lg">{{ $product->description }}</p>
-							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, iusto.</p>
+							<h4>{{ $skus->product->name }}</h4>
+							<p class="lh-lg">{{ $skus->product->description }}</p>
+
+
 						</div>
 
 						<div class="col-lg-4 col-md-6 col-12 mb-5">
-							<span class="">What is this?</span>
+							<span style="font-size: 18px;" class="">Характеристики</span>
 							<ul class="ps-3 mt-3">
-								<li>95% Polyester, 5% Spandex</li>
+								<!-- Laravel: интернет магазин ч.35: Eloquent: whereHas -->
+								<!-- Перечисляем набор свойств товара(если они есть) -->
+								@isset($skus->product->properties)
+								@foreach ($skus->propertyOptions as $propertyOption)
+								<li>{{ $propertyOption->property->name }}: {{ $propertyOption->name }}</li>
+								@endforeach
+								@endisset
+								<!-- <li>95% Polyester, 5% Spandex</li>
 								<li>Wrap Closure</li>
 								<li>Hand Wash Only</li>
-								<li>sinple yet flatering</li>
+								<li>sinple yet flatering</li> -->
 							</ul>
 						</div>
-						<div class="col-lg-4 col-md-6 col-12 mb-5">
+						<!-- <div class="col-lg-4 col-md-6 col-12 mb-5">
 							<span class="">What makes our products unique?</span>
 							<p class="mt-3 lh-lg">Alaways bring you new fashion style and pretly design. We dedicated our effort ot design beautiful clothing in quality</p>
 						</div>
 						<div class="col-lg-4 col-md-6 col-12 mb-5">
 							<span class="">Washing Instructions</span>
 							<p class="mt-3">Hand wash or gentle machine wash with cold water</p>
-						</div>
+						</div> -->
 					</div>
 				</div>
 				<div class="custom list-content" data-tab="tab2">

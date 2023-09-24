@@ -31,6 +31,6 @@ class ViewServiceProvider extends ServiceProvider
 		// 1-ый параметр это шаблоны (здесь- layouts.master и categories)
 		// 2-ой параметр показыввает какой класс используем
 		View::composer(['layouts.master', 'categories'], 'App\ViewComposers\CategoriesComposer');
-		View::composer(['index'], 'App\ViewComposers\BestProductsComposer');
+		//View::composer(['index'], 'App\ViewComposers\BestProductsComposer');
 	}
 }

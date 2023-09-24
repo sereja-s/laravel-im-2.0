@@ -1,7 +1,7 @@
 @extends('auth.layouts.master')
 
 @isset($sku)
-@section('title', 'Редактировать Sku ' . товара: . $sku->product->name)
+@section('title', 'Редактировать Sku товара: ' . $sku->product->name)
 @else
 @section('title', 'Добавить Sku')
 @endisset

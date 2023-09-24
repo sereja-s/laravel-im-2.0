@@ -70,21 +70,7 @@
 
 		<div class="wrapper">
 
-			@foreach($bestProducts as $bestProduct)
 
-			<div class="item">
-				<a href="{{ route('product', [$bestProduct->category->code, $bestProduct->code]) }}" class="guide-content">
-					<div class="guide-img">
-						<img src="{{ Storage::url($bestProduct->image) }}" class="img-fluid" alt="{{ $bestProduct->name }}" />
-					</div>
-					<div class="guide-text text-center">
-						<div class="guide-title">{{ $bestProduct->name }}</div>
-						<p>{{ $bestProduct->description }}</p>
-					</div>
-				</a>
-			</div>
-
-			@endforeach
 
 			<!-- <div class="item">
 				<div class="guide-content">

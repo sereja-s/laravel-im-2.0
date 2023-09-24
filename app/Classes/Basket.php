@@ -5,6 +5,8 @@ namespace App\Classes;
 use App\Mail\OrderCreated;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Sku;
+use App\Services\CurrencyConversion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -17,9 +19,12 @@ class Basket
 	// На вход конструктору передаём флаг
 	public function __construct($createOrder = false)
 	{
-		$orderId = session('orderId');
+		// +ч.30: Collection, Объект Eloquent без сохранения
+		// полученный заказ будем держать в сессии
+		$order = session('order');
 
-		if (is_null($orderId) && $createOrder) {
+		// если заказа в сессии ещё нет и приходит флаг: создать заказ
+		if (is_null($order) && $createOrder) {
 
 			$data = [];
 
@@ -34,13 +39,18 @@ class Basket
 				//$this->order->save();
 			}
 
-			$this->order = Order::create($data);
+			// +ч.30: Collection, Объект Eloquent без сохранения
+			$data['currency_id'] = CurrencyConversion::getCurrentCurrencyFromSession()->id;
 
-			session(['orderId' => $this->order->id]);
-		} else {
+			//$this->order = Order::create($data);
+			$this->order = new Order($data);
 
-			$this->order = Order::findOrFail($orderId);
-		}
+			session(['order' => $this->order]);
+		}/*  else {
+
+			//$this->order = Order::findOrFail($orderId);
+			$this->order = $order;
+		} */
 	}
 
 	/** 
@@ -72,11 +82,13 @@ class Basket
 
 	/** 
 	 * Метод добавляет продукт
+	 * (+ч.35: Eloquent: whereHas)
 	 */
-	public function addProduct(Product $product)
+	public function addSku(Sku $skus)
 	{
 		// перед добавление продукта проверим есть ли он(его id) уже в корзине:
-		if ($this->order->products->contains($product->id)) {
+		if ($this->order->skus->contains($skus->id)) {
+
 
 			// Если товар есть, доберёмся к строке товара в связующей таблице: order_product и увеличим ей значение в поле: count:
 
@@ -84,12 +96,12 @@ class Basket
 			// получим данные из таблицы: product для первого продукта в связующей таблице, соответствующего условию
 
 			// В конце указали, что нам нужно добраться до самой строки товара в связующей таблице: order_product
-			$pivotRow = $this->order->products()->where('product_id', $product->id)->first()->pivot;
+			$pivotRow = $this->order->skus()->where('sku_id', $skus->id)->first()->pivot;
 
 			$pivotRow->count++;
 
 			// (+ч.23: Model Injection, new Class)
-			if ($pivotRow->count > $product->count) {
+			if ($pivotRow->count > $skus->count) {
 
 				return false;
 			}
@@ -97,13 +109,14 @@ class Basket
 			$pivotRow->update();
 		} else {
 
-			if ($product->count == 0) {
+			if ($skus->count == 0) {
 
 				return false;
 			}
 
 			// положим товар в заказ (в связующую таблицу: order_product)
-			$this->order->products()->attach($product->id);
+			dd($skus->price);
+			$this->order->skus()->attach($skus->id);
 		}
 
 		// если мы авторизованы, нужно добавить поле: user_id к заказу
@@ -114,7 +127,7 @@ class Basket
 		//$this->order->save();
 		//}
 
-		Order::changeFullSum($product->price);
+		Order::changeFullSum($skus->price);
 
 		return true;
 	}

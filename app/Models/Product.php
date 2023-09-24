@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\CurrencyConversion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -64,9 +65,9 @@ class Product extends Model
 
 	/** 
 	 * Метод пересчитает общую цену за товар в корзине при изменении его кол-ва
-	 * (+ч.7: Pivot table)
+	 * (+ч.7: Pivot table, -ч.35: Eloquent: whereHas)
 	 */
-	public function getPriceForCount()
+	/* 	public function getPriceForCount()
 	{
 		if (!is_null($this->pivot)) {
 
@@ -74,7 +75,7 @@ class Product extends Model
 		}
 
 		return $this->price;
-	}
+	} */
 
 
 	// ч.17: Checkbox, Mutator 
@@ -120,9 +121,25 @@ class Product extends Model
 	 * Метод покажет, что товар доступен для заказа
 	 * (ч.22: Кол-во товара, Soft Delete)
 	 */
-	public function isAvailable()
+	//public function isAvailable()
+	//{
+	// указали что товар должен быть не удалён(скрыт) и его кол-во больше 0
+	//	return !$this->trashed() && $this->count > 0;
+	//}
+
+	/** 
+	 * Метод выполняет пересчёт цены товара при изменении валюты
+	 */
+	public function getPriceAttribute($value)
 	{
-		// указали что товар должен быть не удалён(скрыт) и его кол-во больше 0
-		return !$this->trashed() && $this->count > 0;
+		return round(CurrencyConversion::convert($value), 2);
+	}
+
+	/** 
+	 * Метод устанавливает выбранный символ валюты в ценах (ч.28: Мультивалюта)
+	 */
+	public function getProductNameAttribute()
+	{
+		return $this->product->name;
 	}
 }

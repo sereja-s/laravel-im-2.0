@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 
+Route::get('currency/{currencyCode}', [MainController::class, 'changeCurrency'])->name('currency');
 Route::get('/logout', [LoginController::class, 'logout'])->name('log-out');
 
 /* Route::middleware(['auth'])->group(function () {
@@ -91,11 +92,11 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/', [MainController::class, 'index'])->name('index');
 Route::get('/products', [MainController::class, 'products'])->name('products');
 Route::get('/categories', [MainController::class, 'categories'])->name('categories');
-Route::post('subscription/{product}', [MainController::class, 'subscribe'])->name('subscription');
+Route::post('subscription/{skus}', [MainController::class, 'subscribe'])->name('subscription');
 
 Route::group(['prefix' => 'basket'], function () {
 
-	Route::post('/add/{product}', [BasketController::class, 'basketAdd'])->name('basket-add');
+	Route::post('/add/{skus}', [BasketController::class, 'basketAdd'])->name('basket-add');
 
 	Route::group([
 
@@ -106,10 +107,11 @@ Route::group(['prefix' => 'basket'], function () {
 		Route::get('/place', [BasketController::class, 'basketPlace'])->name('basket-place');
 
 
-		Route::post('/remove/{product}', [BasketController::class, 'basketRemove'])->name('basket-remove');
+		Route::post('/remove/{skus}', [BasketController::class, 'basketRemove'])->name('basket-remove');
 		Route::post('/confirm', [BasketController::class, 'basketConfirm'])->name('basket-confirm');
 	});
 });
 
 Route::get('/{category}', [MainController::class, 'category'])->name('category');
-Route::get('/{category}/{product?}', [MainController::class, 'product'])->name('product');
+//Route::get('/{category}/{product?}', [MainController::class, 'product'])->name('product');
+Route::get('/{category}/{product}/{skus}', [MainController::class, 'sku'])->name('sku');

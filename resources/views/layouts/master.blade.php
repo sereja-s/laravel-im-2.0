@@ -32,7 +32,7 @@
 					<ul class="d-lg-flex d-none p-0 gap-3 sub">
 
 						<li class="nav-item" style="position:relative;">
-							<a href="#0" class="nav-link"><i class="ri-user-line"></i></a>
+							<a style="padding: 7px;" href="#0" class="nav-link"><i class="ri-user-line"></i></a>
 						</li>
 						<div class="sub-menu" style="position: absolute; top: 77px; left: 7px;">
 							<ul class="sub-link" style="line-height: 10px">
@@ -59,12 +59,12 @@
 								@endauth
 							</ul>
 						</div>
-						<li class="nav-item">
+						<!-- <li class="nav-item">
 							<a href="#0" class="nav-link position-relative">
 								<i class="ri-star-line"></i>
 								<span class="item-flotaing position-absolute"><span>7</span></span>
 							</a>
-						</li>
+						</li> -->
 
 					</ul>
 				</div>
@@ -190,13 +190,11 @@
 											</ul>
 										</div>
 										<div class="col-2">
-											<h6>Perfume</h6>
+											<h6>Цены в: {{ App\Models\Currency::byCode(session('currency', 'RUB'))->first()->symbol }}</h6>
 											<ul class="sub-link">
-												<li class="nav-item"><a href="#0" class="nav-link">Armani</a></li>
-												<li class="nav-item"><a href="#0" class="nav-link">Channel</a></li>
-												<li class="nav-item"><a href="#0" class="nav-link">Dior</a></li>
-												<li class="nav-item"><a href="#0" class="nav-link">Gucci</a></li>
-												<li class="nav-item"><a href="#0" class="nav-link">Hugo Boss</a></li>
+												@foreach(App\Models\Currency::get() as $currency)
+												<li class="nav-item"><a href="{{ route('currency', $currency->code) }}" class="nav-link">{{ $currency->symbol }}</a></li>
+												@endforeach
 											</ul>
 										</div>
 									</div>

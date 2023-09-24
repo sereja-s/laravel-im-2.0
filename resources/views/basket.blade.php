@@ -20,16 +20,16 @@
 	<div class="container">
 		<div class="row">
 
-			@foreach($order->products()->with('category')->get() as $product)
+			@foreach($order->skus()->with('category')->get() as $sku)
 
 			<div class="col-md-6 col-sm-12 p-0">
 				<div class="details">
 					<div class="item d-flex align-items-center justify-content-between flex-wrap">
 						<div class="cart-img mb-3 mb-sm-0">
-							<a href="{{ route('product', [$product->category->code, $product->code]) }}"><img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" /></a>
+							<a href="{{ route('sku', [$sku->product->category->code, $sku->product->code, $sku]) }}"><img src="{{ Storage::url($sku->product->image) }}" alt="{{ $sku->product->name }}" /></a>
 						</div>
 						<div class="cart-details">
-							<h6 class="mb-0">{{ $product->name }}</h6>
+							<h6 class="mb-0">{{ $sku->product->name }}</h6>
 							<p class="mb-0">Color: Tosca</p>
 							<p class="mb-0">Size: L</p>
 						</div>
@@ -40,16 +40,17 @@
 				<div class="cart-quantity d-flex justify-content-between align-items-center flex-wrap">
 					<div class="inc-dec">
 
-						<form action="{{ route('basket-remove', $product) }}" method="POST"><button type="submit">-</button>@csrf</form>
+						<form action="{{ route('basket-remove', $sku) }}" method="POST"><button type="submit">-</button>@csrf</form>
 
-						<input type="text" value="{{ $product->pivot->count }}" class="text-center" />
+						<input type="text" value="{{ $sku->pivot->count }}" class="text-center" />
 
-						<form action="{{ route('basket-add', $product) }}" method="POST"><button type="submit">+</button>@csrf</form>
+						<form action="{{ route('basket-add', $sku) }}" method="POST"><button type="submit">+</button>@csrf</form>
 
 					</div>
 					<div>
-						<p class="price mb-0">{{ $product->price }} руб. за ед.</p>
-						<p class="price mb-0">всего: {{ $product->getPriceForCount() }} руб.</p>
+						@dd($sku->price)
+						<p class="price mb-0">{{ $sku->price }} руб. за ед.</p>
+						<p class="price mb-0">всего: {{ $sku->getPriceForCount() }} руб.</p>
 					</div>
 					<div class="delete-button">
 						<a href="#0"><i class="ri-close-line"></i></a>

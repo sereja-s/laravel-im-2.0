@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\Basket;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Sku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,10 +32,11 @@ class BasketController extends Controller
 	 * Метод добавления тоаров в корзину
 	 * (ч.6: Многие-ко-многим, Сессия)
 	 * (+ч.23: Model Injection, new Class) На вход подаём инъекцию через класс: Product
+	 * (+ч.35: Eloquent: whereHas)
 	 */
-	public function basketAdd(Product $product)
+	public function basketAdd(Sku $skus)
 	{
-		$result = (new Basket(true))->addProduct($product);
+		$result = (new Basket(true))->addSku($skus);
 
 		/* $orderId = session('orderId');
 
@@ -92,10 +94,10 @@ class BasketController extends Controller
 		// (+ч.23: Model Injection, new Class)
 		if ($result) {
 
-			session()->flash('success', 'Товар: ' . $product->name . ' добавлен в корзину');
+			session()->flash('success', 'Товар: ' . $skus->product->name . ' добавлен в корзину');
 		} else {
 
-			session()->flash('warning', 'Товар: ' . $product->name . ' в большем количестве не доступен для заказа');
+			session()->flash('warning', 'Товар: ' . $skus->product->name . ' в большем количестве не доступен для заказа');
 		}
 
 		//session()->flash('success', 'товар: ' . $product->name . ' добавлен в корзину');
