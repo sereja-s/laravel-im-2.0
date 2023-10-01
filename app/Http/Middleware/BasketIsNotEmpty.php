@@ -17,12 +17,12 @@ class BasketIsNotEmpty
 	 */
 	public function handle(Request $request, Closure $next)
 	{
-		// ч.11: Создание Middleware, Auth
+		// ч.11: Создание Middleware, Auth,  +ч.30: Collection, Объект Eloquent без сохранения
 		// Проверим что заказ существует:
-		$orderId = session('orderId');
+		$order = session('order');
 
 		// (+ч.20: Scope, Оптимизация запросов к БД)
-		if (!is_null($orderId) && Order::getFullSum() > 0) {
+		if (!is_null($order) && $order->getFullSum() > 0) {
 
 			// получим этот заказ (если по id заказа ничего не найдёт-вернёт 404)
 			//$order = Order::findOrFail($orderId);
@@ -37,6 +37,8 @@ class BasketIsNotEmpty
 			return $next($request);
 			//}
 		}
+		session()->forget('order');
+
 		// (+ч.15: Blade Custom Directive)
 		session()->flash('warning', 'Ваша корзина пуста');
 

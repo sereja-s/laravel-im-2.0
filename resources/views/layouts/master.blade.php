@@ -190,12 +190,12 @@
 											</ul>
 										</div>
 										<div class="col-2">
-											<h6>Цены в: {{ App\Models\Currency::byCode(session('currency', 'RUB'))->first()->symbol }}</h6>
+											<!-- <h6>Цены в: {{ $currencySymbol }}</h6>
 											<ul class="sub-link">
-												@foreach(App\Models\Currency::get() as $currency)
+												@foreach($currencies as $currency)
 												<li class="nav-item"><a href="{{ route('currency', $currency->code) }}" class="nav-link">{{ $currency->symbol }}</a></li>
 												@endforeach
-											</ul>
+											</ul> -->
 										</div>
 									</div>
 								</div>

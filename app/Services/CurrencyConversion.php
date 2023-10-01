@@ -44,7 +44,7 @@ class CurrencyConversion
 	}
 
 	/** 
-	 * Метод из сессии возвращает нужную нам валюту
+	 * Метод из сессии возвращает код нужной нам валюты
 	 * (ч.30: Collection, Объект Eloquent без сохранения)
 	 */
 	public static function getCurrencyFromSession()
@@ -52,6 +52,10 @@ class CurrencyConversion
 		return session('currency', self::DEFAULT_CURRENCY_CODE);
 	}
 
+	/** 
+	 * Метод из сессии достаёт id(объект) нужной нам валюты
+	 * (+ч.30: Collection, Объект Eloquent без сохранения)
+	 */
 	public static function getCurrentCurrencyFromSession()
 	{
 		self::loadContainer();
@@ -59,7 +63,10 @@ class CurrencyConversion
 		$currencyCode = self::getCurrencyFromSession();
 
 		foreach (self::$container as $currency) {
+
+			// если код в объекте равняется коду из сессии
 			if ($currency->code === $currencyCode) {
+
 				return $currency;
 			}
 		}

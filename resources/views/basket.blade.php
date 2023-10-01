@@ -20,7 +20,7 @@
 	<div class="container">
 		<div class="row">
 
-			@foreach($order->skus()->with('category')->get() as $sku)
+			@foreach($order->skus as $sku)
 
 			<div class="col-md-6 col-sm-12 p-0">
 				<div class="details">
@@ -42,15 +42,15 @@
 
 						<form action="{{ route('basket-remove', $sku) }}" method="POST"><button type="submit">-</button>@csrf</form>
 
-						<input type="text" value="{{ $sku->pivot->count }}" class="text-center" />
+						<input type="text" value="{{ $sku->countInOrder }}" class="text-center" />
 
 						<form action="{{ route('basket-add', $sku) }}" method="POST"><button type="submit">+</button>@csrf</form>
 
 					</div>
 					<div>
-						@dd($sku->price)
-						<p class="price mb-0">{{ $sku->price }} руб. за ед.</p>
-						<p class="price mb-0">всего: {{ $sku->getPriceForCount() }} руб.</p>
+
+						<p class="price mb-0">{{ $sku->price }} {{ $currencySymbol }} за ед.</p>
+						<p class="price mb-0">всего: {{ $sku->price * $sku->countInOrder }} {{ $currencySymbol }}</p>
 					</div>
 					<div class="delete-button">
 						<a href="#0"><i class="ri-close-line"></i></a>

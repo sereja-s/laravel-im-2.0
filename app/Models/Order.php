@@ -32,6 +32,14 @@ class Order extends Model
 	}
 
 	/** 
+	 * Метод реализует связь заказа с выбранным(текущим) символом валюты
+	 */
+	public function currency()
+	{
+		return $this->belongsTo(Currency::class);
+	}
+
+	/** 
 	 * Метод реализует связь заказa с пользователем
 	 * (ч.10: Middleware Авторизации)
 	 */
@@ -62,53 +70,74 @@ class Order extends Model
 	 * (ч.7: Pivot table)
 	 * (+ч.20: Scope, Оптимизация запросов к БД)
 	 */
-	public static function getFullSum()
+	public function getFullSum()
 	{
-		return session('full_order_sum', 0);
+		// +ч.30: Collection, Объект Eloquent без сохранения
+		$sum = 0;
+
+		// Laravel: интернет магазин ч.35: Eloquent: whereHas
+		foreach ($this->skus as $sku) {
+			$sum += $sku->price * $sku->countInOrder;
+		}
+
+		return $sum;
 	}
 
 	/** 
 	 * Метод увеличивает сумму заказа в сессии
-	 * (ч.20: Scope, Оптимизация запросов к БД)
+	 * (ч.20: Scope, Оптимизация запросов к БД, -ч.30: Collection, Объект Eloquent без сохранения)
 	 */
-	public static function changeFullSum($changeSum)
+	/* public static function changeFullSum($changeSum)
 	{
 		$sum = self::getFullSum() + $changeSum;
 		session(['full_order_sum' => $sum]);
-	}
+	} */
 
 	/** 
 	 * Метод стирает ячейку с суммой заказа после его оформления
-	 * (ч.20: Scope, Оптимизация запросов к БД)
+	 * (ч.20: Scope, Оптимизация запросов к БД, -ч.30: Collection, Объект Eloquent без сохранения)
 	 */
-	public static function eraseOrderSum()
+	/* public static function eraseOrderSum()
 	{
 		session()->forget('full_order_sum');
-	}
+	} */
 
 	/** 
 	 * Метод сохранения заказа
 	 */
 	public function saveOrder($name, $phone)
 	{
-		if ($this->status == 0) {
+		// -ч.30: Collection, Объект Eloquent без сохранения
+		//if ($this->status == 0) {
 
-			// когда заказ найден в БД, необходимо к нему обратиться и обновить его параметры(значения полей таблицы: orders)
-			// (эти параметры получим из запроса поданного на вход):
-			$this->name = $name;
-			$this->phone = $phone;
-			$this->status = 1;
+		// когда заказ найден в БД, необходимо к нему обратиться и обновить его параметры(значения полей таблицы: orders)
+		// (эти параметры получим из запроса поданного на вход):
+		$this->name = $name;
+		$this->phone = $phone;
+		$this->status = 1;
 
-			// сохраним заказ с внесёнными изменениями:
-			$this->save();
+		// +ч.30: Collection, Объект Eloquent без сохранения
+		$this->sum = $this->getFullSum();
 
-			// затем его нужно удалить из сессии:
-			session()->forget('orderId');
+		$skus = $this->skus;
+		// сохраним заказ с внесёнными изменениями:
+		$this->save();
 
-			return true;
-		} else {
+		// добавим те продукты которые сохранили
+		foreach ($skus as $skuInOrder) {
+			$this->skus()->attach($skuInOrder, [
+				'count' => $skuInOrder->countInOrder,
+				'price' => $skuInOrder->price,
+			]);
+		}
+
+		// затем его нужно удалить из сессии:
+		session()->forget('order');
+
+		return true;
+		/* } else {
 
 			return false;
-		}
+		} */
 	}
 }

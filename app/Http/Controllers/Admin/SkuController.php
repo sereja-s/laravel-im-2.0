@@ -95,7 +95,9 @@ class SkuController extends Controller
 	{
 		$params = $request->all();
 		$params['product_id'] = $request->product->id;
+
 		$sku->update($params);
+
 		$sku->propertyOptions()->sync($request->property_id);
 		return redirect()->route('skus.index', $product);
 	}

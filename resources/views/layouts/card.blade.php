@@ -48,7 +48,7 @@
 
 
 		<!-- <span class="discount">$63.00</span> -->
-		<span class="current">{{ $sku->price }}руб.</span>
+		<span class="current">{{ $sku->price }} {{ $currencySymbol }}</span>
 	</div>
 
 	<!-- в action в route 2-ым параметром укажем $product, который по умолчанию возмёт поле id (т.е. $product->id можно не указывать) -->

@@ -130,16 +130,16 @@ class Product extends Model
 	/** 
 	 * Метод выполняет пересчёт цены товара при изменении валюты
 	 */
-	public function getPriceAttribute($value)
+	/* public function getPriceAttribute($value)
 	{
 		return round(CurrencyConversion::convert($value), 2);
-	}
+	} */
 
 	/** 
 	 * Метод устанавливает выбранный символ валюты в ценах (ч.28: Мультивалюта)
 	 */
-	public function getProductNameAttribute()
+	/* public function getProductNameAttribute()
 	{
 		return $this->product->name;
-	}
+	} */
 }

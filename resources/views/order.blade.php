@@ -138,7 +138,7 @@
 				<div class="subtotal-section mt-3">
 					<div class="d-flex justify-content-between align-items-center">
 						<span class="subtotal">Стоимость заказа</span>
-						<span>{{ $order->calculateFullSum() }} руб.</span>
+						<span>{{ $order->getFullSum() }} {{ $currencySymbol }}</span>
 					</div>
 					<div class="d-flex justify-content-between align-items-center">
 						<span class="tax">Tex</span>

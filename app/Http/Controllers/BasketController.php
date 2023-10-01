@@ -36,6 +36,7 @@ class BasketController extends Controller
 	 */
 	public function basketAdd(Sku $skus)
 	{
+		// создаём новую корзину и добавляем продукт
 		$result = (new Basket(true))->addSku($skus);
 
 		/* $orderId = session('orderId');
@@ -109,13 +110,13 @@ class BasketController extends Controller
 	 * Метод удаляет товар из корзины
 	 * (ч.7: Pivot table)
 	 */
-	public function basketRemove(Product $product)
+	public function basketRemove(Sku $skus)
 	{
 		// (+ч.23: Model Injection, new Class)
 		//$basket = (new Basket());
 		//$order = $basket->getOrder();
 
-		(new Basket())->removeProduct($product);
+		(new Basket())->removeSku($skus);
 
 		// получим id заказа из сессии
 		//$orderId = session('orderId');
@@ -154,7 +155,7 @@ class BasketController extends Controller
 		// Уменьщаем стоимость заказа в сессии
 		//Order::changeFullSum(-$product->price);
 
-		session()->flash('warning', 'товар: ' . $product->name . ' удалён из корзины');
+		session()->flash('warning', 'товар: ' . $skus->name . ' удалён из корзины');
 
 		return redirect()->route('basket');
 	}
@@ -173,6 +174,7 @@ class BasketController extends Controller
 		if (!$basket->countAvailable()) {
 
 			session()->flash('warning', 'Товар: не доступен для заказа в полном объёме');
+
 			return redirect()->route('basket');
 		}
 
@@ -239,7 +241,8 @@ class BasketController extends Controller
 		//session()->forget('orderId');
 
 		// ч.20: Scope, Оптимизация запросов к БД
-		Order::eraseOrderSum();
+		// -ч.30: Collection, Объект Eloquent без сохранения
+		//Order::eraseOrderSum();
 
 		return redirect()->route('index');
 	}

@@ -3,7 +3,10 @@
 namespace App\Observers;
 
 use App\Models\Product;
+
 use App\Models\Subscription;
+
+//ч.25: Observer (подписка на отсутствующий товар)
 
 class ProductObserver
 {

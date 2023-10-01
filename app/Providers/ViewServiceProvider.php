@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\CurrencyConversion;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +32,16 @@ class ViewServiceProvider extends ServiceProvider
 		// 1-ый параметр это шаблоны (здесь- layouts.master и categories)
 		// 2-ой параметр показыввает какой класс используем
 		View::composer(['layouts.master', 'categories'], 'App\ViewComposers\CategoriesComposer');
+
+		// +ч.31: ViewComposer, Collection (map, flatten, take, mapToGroups)
+		View::composer(['layouts.master'], 'App\ViewComposers\CurrenciesComposer');
+
 		//View::composer(['index'], 'App\ViewComposers\BestProductsComposer');
+
+		// для всех шаблонов (+ч.31: ViewComposer, Collection (map, flatten, take, mapToGroups))
+		View::composer('*', function ($view) {
+			$currencySymbol = CurrencyConversion::getCurrencySymbol();
+			$view->with('currencySymbol', $currencySymbol);
+		});
 	}
 }

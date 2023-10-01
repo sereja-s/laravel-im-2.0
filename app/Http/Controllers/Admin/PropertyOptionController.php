@@ -37,7 +37,7 @@ class PropertyOptionController extends Controller
 	}
 
 	/**
-	 * Метод создаёт новое значение свойства преданного на вход при отправке запроса на на сохранение значения свойства из формы
+	 * Метод создаёт новое значение свойства товара при отправке запроса из формы
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
@@ -49,7 +49,6 @@ class PropertyOptionController extends Controller
 
 		PropertyOption::create($params);
 
-		return redirect()->route('property-options.index', $property);
 		return redirect()->route('property-options.index', $property);
 	}
 
