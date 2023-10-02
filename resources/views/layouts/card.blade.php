@@ -45,7 +45,13 @@
 		<!-- вместо непосредственного получения сатегории, применим матод: category() в модели: Product реализующему связь таблиц и через продукт обратимся уже не к методу, а к одноимённму свойству -->
 		<h4>{{ $sku->product->name }}<br>( {{ $sku->product->category->name }} )</h4>
 
-
+		<!-- Laravel: интернет магазин ч.35: Eloquent: whereHas -->
+		<!-- Перечисляем набор свойств товара(если они есть) -->
+		<!-- @isset($sku->product->properties)
+		@foreach ($sku->propertyOptions as $propertyOption)
+		<h4>{{ $propertyOption->property->name }}: {{ $propertyOption->name }}</h4>
+		@endforeach
+		@endisset -->
 
 		<!-- <span class="discount">$63.00</span> -->
 		<span class="current">{{ $sku->price }} {{ $currencySymbol }}</span>

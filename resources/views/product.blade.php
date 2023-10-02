@@ -98,7 +98,7 @@
 					<h3>{{ $skus->product->name }}</h3>
 					<div class="d-flex justify-content-between price-review mt-4">
 						<div class="d-flex">
-							<span class="price">{{ $skus->price }} руб.</span>
+							<span class="price">{{ $skus->price }} {{ $currencySymbol }}</span>
 							<div class="discount">
 								<div style="text-decoration: none;">цена со скидкой</div>
 								<div>-25%</div>
@@ -184,7 +184,7 @@
 								@endif
 							</div>
 
-
+							<!-- подписка на товар -->
 
 							<form action="{{ route('subscription', $skus) }}" method="post">
 								@csrf
@@ -262,12 +262,12 @@
 							<h4>{{ $skus->product->name }}</h4>
 							<p class="lh-lg">{{ $skus->product->description }}</p>
 
-
 						</div>
 
 						<div class="col-lg-4 col-md-6 col-12 mb-5">
 							<span style="font-size: 18px;" class="">Характеристики</span>
 							<ul class="ps-3 mt-3">
+
 								<!-- Laravel: интернет магазин ч.35: Eloquent: whereHas -->
 								<!-- Перечисляем набор свойств товара(если они есть) -->
 								@isset($skus->product->properties)

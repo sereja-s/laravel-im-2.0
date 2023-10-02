@@ -32,7 +32,7 @@ class Sku extends Model
 
 	/** 
 	 * Метод покажет, что товар доступен для заказа
-	 * (ч.22: Кол-во товара, Soft Delete)
+	 * (ч.22: Кол-во товара, Soft Delete, +ч.35: Eloquent: whereHas)
 	 */
 	public function isAvailable()
 	{

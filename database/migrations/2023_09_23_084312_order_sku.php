@@ -17,7 +17,7 @@ class OrderSku extends Migration
 			$table->bigIncrements('id');
 			$table->integer('order_id');
 			$table->integer('sku_id');
-			$table->integer('count')->default(1);
+			$table->integer('count');
 			$table->double('price');
 			$table->timestamps();
 		});

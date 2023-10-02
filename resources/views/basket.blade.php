@@ -18,9 +18,10 @@
 <!-- Cart Section Start Here -->
 <section class="cart-page">
 	<div class="container">
-		<div class="row">
 
-			@foreach($order->skus as $sku)
+		@foreach($order->skus as $sku)
+
+		<div class="row">
 
 			<div class="col-md-6 col-sm-12 p-0">
 				<div class="details">
@@ -58,9 +59,10 @@
 				</div>
 			</div>
 
-			@endforeach
-
 		</div>
+
+		@endforeach
+
 	</div>
 </section>
 

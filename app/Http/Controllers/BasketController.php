@@ -39,6 +39,7 @@ class BasketController extends Controller
 		// создаём новую корзину и добавляем продукт
 		$result = (new Basket(true))->addSku($skus);
 
+
 		/* $orderId = session('orderId');
 
 		if (is_null($orderId)) {
@@ -155,7 +156,7 @@ class BasketController extends Controller
 		// Уменьщаем стоимость заказа в сессии
 		//Order::changeFullSum(-$product->price);
 
-		session()->flash('warning', 'товар: ' . $skus->name . ' удалён из корзины');
+		session()->flash('warning', 'товар: ' . $skus->product->name . ' удалён из корзины');
 
 		return redirect()->route('basket');
 	}

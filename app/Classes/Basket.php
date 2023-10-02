@@ -10,6 +10,8 @@ use App\Services\CurrencyConversion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
+use function PHPSTORM_META\map;
+
 // (ч.23: Model Injection, new Class)
 
 class Basket
@@ -63,110 +65,6 @@ class Basket
 	}
 
 	/** 
-	 * Метод сохранения заказа в корзине (использует одноимённый метод из модели: Order)
-	 */
-	public function saveOrder($name, $phone, $email)
-	{
-		// (+ч.23: Model Injection, new Class)
-		if (!$this->countAvailable(true)) {
-
-			return false;
-		}
-
-		// +ч.30: Collection, Объект Eloquent без сохранения
-		return $this->order->saveOrder($name, $phone);
-
-		// перед сохранением заказа отправим сообщение о нём (ч.24: Отправка Email)
-		// при создании нового объекта класса, указали параметры которые хотим передать в его метод-конструктор
-		// $this - это объект корзина (в ней вся информация о заказе) и для него получаем текущий заказ
-		Mail::to($email)->send(new OrderCreated($name, $this->getOrder()));
-
-		return true;
-	}
-
-	/** 
-	 * Метод добавляет продукт
-	 * (+ч.35: Eloquent: whereHas)
-	 */
-	public function addSku(Sku $skus)
-	{
-		// перед добавление продукта проверим есть ли он(его id) уже в корзине:
-		if ($this->order->skus->contains($skus)) {
-
-			// Если товар есть, доберёмся к строке товара в связующей таблице: order_product и увеличим ей значение в поле: count:
-
-			// (если бы обратились просто к products, то работали бы с коллекцией и запрос был бы не SQL-ный)
-			// получим данные из таблицы: product для первого продукта в связующей таблице, соответствующего условию
-
-			// В конце указали, что нам нужно добраться до самой строки товара в связующей таблице: order_product
-			$pivotRow = $this->order->skus->where('id', $skus->id)->first();
-
-			// проверяем, что кол-во добавленное в корзину больше чем доступное
-			if ($pivotRow->countInOrder >= $skus->count) {
-				return false;
-			}
-
-			$pivotRow->countInOrder++;
-
-			// (+ч.23: Model Injection, new Class) 
-			/* if ($pivotRow->count > $skus->count) {
-
-				return false;
-			}
-
-			$pivotRow->update(); */
-		} else {
-			if ($skus->count == 0) {
-
-				return false;
-			}
-
-			$skus->countInOrder = 1;
-			$this->order->skus->push($skus);
-
-			// положим товар в заказ (в связующую таблицу: order_product(здесь- order_xku))			
-			//$this->order->skus()->attach($skus->id);
-
-			// используем коллекцию
-			$this->order->skus->push($skus);
-		}
-
-		// если мы авторизованы, нужно добавить поле: user_id к заказу
-		//if (Auth::check()) {
-		//	$this->order->user_id = Auth::id();
-
-		// сохраняем заказ с id пользователя, который делал заказ
-		//$this->order->save();
-		//}
-
-		// (-ч.30: Collection, Объект Eloquent без сохранения)
-		// Order::changeFullSum($skus->price);
-
-		return true;
-	}
-
-	/** 
-	 * Метод удаляет продукт
-	 * (+ч.35: Eloquent: whereHas)
-	 */
-	public function removeSku(Sku $sku)
-	{
-		// Laravel: интернет магазин ч.30: Collection, Объект Eloquent без сохранения
-		if ($this->order->skus->contains($sku)) {
-
-			$pivotRow = $this->order->skus->where('id', $sku->id)->first();
-
-			if ($pivotRow->countInOrder < 2) {
-
-				$this->order->skus->pop($sku);
-			} else {
-
-				$pivotRow->countInOrder--;
-			}
-		}
-	}
-
-	/** 
 	 * Метод проверяет доступен ли товар для заказа
 	 * (в параметры добавляем флаг (позволит сделать товар недоступным если кто то уже добавил его в корзину и он закончился))
 	 * (+ч.24: Отправка Email)
@@ -214,6 +112,95 @@ class Basket
 
 		return true;
 	}
+
+	/** 
+	 * Метод сохранения заказа в корзине (использует одноимённый метод из модели: Order)
+	 */
+	public function saveOrder($name, $phone, $email)
+	{
+		// (+ч.23: Model Injection, new Class)
+		if (!$this->countAvailable(true)) {
+
+			return false;
+		}
+
+		// +ч.30: Collection, Объект Eloquent без сохранения
+		return $this->order->saveOrder($name, $phone);
+
+		// перед сохранением заказа отправим сообщение о нём (ч.24: Отправка Email)
+		// при создании нового объекта класса, указали параметры которые хотим передать в его метод-конструктор
+		// $this - это объект корзина (в ней вся информация о заказе) и для него получаем текущий заказ
+		Mail::to($email)->send(new OrderCreated($name, $this->getOrder()));
+
+		return true;
+	}
+
+	/** 
+	 * Метод добавляет продукт
+	 * (+ч.35: Eloquent: whereHas)
+	 */
+	public function addSku(Sku $sku)
+	{
+		if ($this->order->skus->contains($sku)) {
+
+			// Если товар есть, доберёмся к строке товара в связующей таблице: order_product и увеличим ей значение в поле: count:
+
+			// (если бы обратились просто к products, то работали бы с коллекцией и запрос был бы не SQL-ный)
+			// получим данные из таблицы: product для первого продукта в связующей таблице, соответствующего условию
+
+			// В конце указали, что нам нужно добраться до самой строки товара в связующей таблице: order_product
+			$pivotRow = $this->order->skus->where('id', $sku->id)->first();
+
+			// проверяем, что кол-во добавленное в корзину больше чем доступное
+			if ($pivotRow->countInOrder >= $sku->count) {
+				return false;
+			}
+			$pivotRow->countInOrder++;
+		} else {
+
+			if ($sku->count == 0) {
+				return false;
+			}
+			$sku->countInOrder = 1;
+			$this->order->skus->push($sku);
+		}
+
+		return true;
+	}
+
+	/** 
+	 * Метод удаляет продукт
+	 * (+ч.35: Eloquent: whereHas)
+	 */
+	public function removeSku(Sku $sku)
+	{
+		// Laravel: интернет магазин ч.30: Collection, Объект Eloquent без сохранения
+
+		if ($this->order->skus->contains($sku)) {
+			$pivotRow = $this->order->skus->where('id', $sku->id)->first();
+			if ($pivotRow->countInOrder < 2) {
+
+				$c = $this->order->skus;
+
+				/* $filtered = $c->filter(function ($value, $key) use ($pivotRow) {
+					return $value['id'] == $pivotRow->id;
+				}); */
+
+				// получим ключ массива удаляемого товара в коллекции заказа корзины
+				$key = $c->search(function ($item) use ($pivotRow) {
+					return $item->id == $pivotRow->id;
+				});
+
+				// удалим этот товар из коллекции товаров заказа в корзине по найденному ключу
+				$c->pull($key);
+			} else {
+
+				$pivotRow->countInOrder--;
+			}
+		}
+	}
+
+
 
 	// (-ч.30: Collection, Объект Eloquent без сохранения)
 	/* 	protected function getPivotRow($product)

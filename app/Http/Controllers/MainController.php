@@ -45,16 +45,15 @@ class MainController extends Controller
 		return view('category', compact('category', 'productsAll'));
 	}
 
-
+	/** 
+	 * Метод покажет товар(товарное предложение)
+	 */
 	public function sku($categoryCode, $productCode, Sku $skus)
 	{
-		// сделаем проверки, что товарное предлложение относится к указанным категории и продукту (+ч.35: Eloquent: whereHas)
-
+		// сделаем проверки, что товарное предлложение относится к указанным продукту и категории (+ч.35: Eloquent: whereHas)
 		if ($skus->product->code != $productCode) {
 			abort(404, 'Product not found');
 		}
-
-
 		if ($skus->product->category->code != $categoryCode) {
 			abort(404, 'Category not found');
 		}
@@ -67,7 +66,9 @@ class MainController extends Controller
 		return view('product', compact('skus'));
 	}
 
-
+	/** 
+	 * Метод отобразит все товары(товарные предложения)
+	 */
 	public function products(ProductsFilterRequest $request)
 	{
 		// посмотреть все методы класса для указаного объекта
