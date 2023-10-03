@@ -33,15 +33,23 @@ class BestProductsComposer
 		// затем получим суммарное количество покупок для каждого товара в заказах
 
 		// В конце сортируем коллекцию, берём три самых продаваемых продукта, получим их ключи и положим в массив
-		$bestProductIds = Order::get()->map->skus->flatten()->map->pivot->mapToGroups(function ($pivot) {
+		$bestSkuIds = Order::get()->map->skus->flatten()->map->pivot->mapToGroups(function ($pivot) {
 
 			// по id продукта получим сколько этого продукта было куплено
-			return [$pivot->product_id => $pivot->count];
+			return [$pivot->sku_id => $pivot->count];
 			// получим сумму из имеющйся внутри коллекции(здесь- количество каждого купленного товара, имеющихся в заказах)
 		})->map->sum()->sortByDesc(null)->take(3)->keys()->toArray();
 
-		$bestProducts = Product::whereIn('id', $bestProductIds)->get();
+		$bestSkus = Sku::whereIn('id', $bestSkuIds)->get();
 
-		$view->with('bestProducts', $bestProducts);
+		/* $bestSkus = Sku::with('orders')
+			->get()->map->orders->flatten()->map->pivot->mapToGroups(function ($pivot) {
+				return [$pivot->sku_id => $pivot->count];
+			})->map->sum()->sortDesc()->take(3)->keys()->collect()
+			->map(function ($value) {
+				return (Sku::query()->where('id', $value)->get());
+			})->flatten(); */
+
+		$view->with('bestSkus', $bestSkus);
 	}
 }

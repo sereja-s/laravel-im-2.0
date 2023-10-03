@@ -34,12 +34,12 @@
 								<div class="filters-price__inputs">
 									<label class="filters-price__label">
 										<span class="filters-price__text">от</span>
-										<input type="text" name="min_price" value="{{ request()->min_price ?? $productsAll->min('price') }}" class="filters-price__input" id="input-0">
+										<input type="text" name="min_price" value="{{ request()->min_price ?? $skusAll->min('price') }}" class="filters-price__input" id="input-0">
 										<span class="filters-price__text">₽</span>
 									</label>
 									<label class="filters-price__label">
 										<span class="filters-price__text">до</span>
-										<input type="text" name="max_price" value="{{ request()->max_price ?? $productsAll->max('price') }}" class="filters-price__input" id="input-1">
+										<input type="text" name="max_price" value="{{ request()->max_price ?? $skusAll->max('price') }}" class="filters-price__input" id="input-1">
 										<span class="filters-price__text">₽</span>
 									</label>
 								</div>

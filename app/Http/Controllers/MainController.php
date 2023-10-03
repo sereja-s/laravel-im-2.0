@@ -40,9 +40,11 @@ class MainController extends Controller
 		// для использования в шаблоне: category.blade.php получим все продукты соответствующей категории
 		//$products = Product::where('category_id', $category->id)->get();
 
-		$productsAll = Product::query()->where('category_id', $category->id)->get();
+		//dd($category->products);
 
-		return view('category', compact('category', 'productsAll'));
+		$skusAll = Sku::with(['product', 'product.category']);
+
+		return view('category', compact('category', 'skusAll'));
 	}
 
 	/** 
@@ -81,28 +83,36 @@ class MainController extends Controller
 		//$productsQuery = Product::with('category');
 
 		// +ч.35: Eloquent: whereHas
-		$skusQuery = Sku::query();
+		//$skusQuery = Sku::query();
+
+		// в метод: with() 1-ым элементом массива укажем: продукт, 2-ым - передаём отношение: product.category (т.е. через продукт достаём категорию)
+		$skusQuery = Sku::with(['product', 'product.category']);
 
 		// Добавим обработку фильтров (+ч.18: Pagination, QueryBuilder, Фильтры): 
-		//if ($request->filled('min_price')) {
-		//
-		//	$productsQuery->where('price', '>=', $request->min_price);
-		//}
-		//
-		//if ($request->filled('max_price')) {
-		//
-		//	$productsQuery->where('price', '<=', $request->max_price);
-		//}
-		//
-		//foreach (['hit', 'new', 'recommend'] as $field) {
-		//
-		//	if ($request->has($field)) {
-		//
-		//		$productsQuery->where($field, 1);
-		//	}
-		//}
+		if ($request->filled('min_price')) {
 
-		$productsAll = Product::get();
+			$skusQuery->where('price', '>=', $request->min_price);
+		}
+
+		if ($request->filled('max_price')) {
+
+			$skusQuery->where('price', '<=', $request->max_price);
+		}
+
+		foreach (['hit', 'new', 'recommend'] as $field) {
+
+			if ($request->has($field)) {
+
+				//$skusQuery->where($field, 1);
+				// т.к. поле: $field относится к главной модели, а не к модели: Sku, то мы не можем по нему фильтровать
+				// поэтому вызовем метод: whereHas() Передаём 1-ым параметром связь с product, 2-ым - функцию, которую используем
+				$skusQuery->whereHas('product', function ($query) use ($field) {
+					$query->$field();
+				});
+			}
+		}
+
+		$skusAll = Sku::get();
 		//$products = Product::paginate(12);
 
 		// Добавим пагинацию, (+ч.18: Pagination, QueryBuilder, Фильтры):
@@ -110,9 +120,11 @@ class MainController extends Controller
 		//$products = $productsQuery->paginate(3)->withPath("?" . $request->getQueryString());
 
 		//ч.35: Eloquent: whereHas
-		$skus = $skusQuery->paginate(5);
+		//$skus = $skusQuery->paginate(5);
+		// 
+		$skus = $skusQuery->paginate(5)->withPath("?" . $request->getQueryString());
 
-		return view('products', compact('skus', 'productsAll'));
+		return view('products', compact('skus', 'skusAll'));
 	}
 
 	// ч.25: Observer, +ч.35: Eloquent: whereHas

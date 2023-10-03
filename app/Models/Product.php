@@ -14,8 +14,8 @@ class Product extends Model
 
 	// добавляем поля что бы могли их редактировать
 	protected $fillable = [
-		'name', 'code', 'price', 'category_id', 'description', 'image', 'hit', 'new', 'recommend', 'count', 'name_en',
-		'description_en', 'count',
+		'name', 'code', 'price', 'category_id', 'description', 'image', 'hit', 'new', 'recommend', 'count',
+		'count',
 	];
 
 	//public function getCategory()
@@ -101,6 +101,22 @@ class Product extends Model
 		$this->attributes['recommend'] = $value === 'on' ? 1 : 0;
 	}
 
+	// Laravel: интернет магазин ч.20: Scope(позволяет расширять запросы к БД), Оптимизация запросов к БД
+
+	public function scopeHit($query)
+	{
+		return $query->where('hit', 1);
+	}
+
+	public function scopeNew($query)
+	{
+		return $query->where('new', 1);
+	}
+
+	public function scopeRecommend($query)
+	{
+		return $query->where('recommend', 1);
+	}
 
 	// ч.17: Checkbox, Mutator
 	// методы вернут true если значение соответствующего поля равно 1

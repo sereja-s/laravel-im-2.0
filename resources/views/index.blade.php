@@ -70,7 +70,21 @@
 
 		<div class="wrapper">
 
+			@foreach($bestSkus as $bestSku)
 
+			<div class="item">
+				<a href="{{ route('sku', [$bestSku->product->category->code, $bestSku->product->code, $bestSku]) }}" class="guide-content">
+					<div class="guide-img">
+						<img src="{{ Storage::url($bestSku->product->image) }}" class="img-fluid" alt="{{ $bestSku->product->name }}" />
+					</div>
+					<div class="guide-text text-center">
+						<div class="guide-title">{{ $bestSku->product->name }}</div>
+						<p>{{ $bestSku->product->description }}</p>
+					</div>
+				</a>
+			</div>
+
+			@endforeach
 
 			<!-- <div class="item">
 				<div class="guide-content">

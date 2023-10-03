@@ -44,8 +44,11 @@ class OrderController extends Controller
 		// чтобы получить в заказе продукты скрытые после удаления (с применением трейта Soft Delete) достроим запрос 
 		//(добавляем скобки к св-ву котрому обращаемся) и затем вызываем метод: withTrashed() и затем метод: get()
 		// (+ч.22: Кол-во товара, Soft Delete)
-		$products = $order->products()->withTrashed()->get();
+		//$products = $order->products()->withTrashed()->get();
 
-		return view('auth.orders.show', compact('order', 'products'));
+		// +ч.35: Eloquent: whereHas
+		$skus = $order->skus()->withTrashed()->get();
+
+		return view('auth.orders.show', compact('order', 'skus'));
 	}
 }

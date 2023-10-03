@@ -26,7 +26,7 @@
 						@foreach ($skus as $sku)
 						<tr>
 							<td>
-								<a href="{{ route('sku', [$sku->product->category->code, $sku->product->code, $sku]]) }}">
+								<a href="{{ route('sku', [$sku->product->category->code, $sku->product->code, $sku]) }}">
 									<img height="56px" src="{{ Storage::url($sku->product->image) }}">
 									{{ $sku->product->name }}
 								</a>

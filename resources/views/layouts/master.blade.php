@@ -78,17 +78,23 @@
 							<div class="mega-content">
 								<div class="container">
 									<div class="row">
+
+										@foreach($bestSkus as $bestSku)
+
 										<div class="col-2">
-											<div class="thumbnail">
-												<a href="#0"></a>
-												<div class="product-img">
-													<img src="/images/product_01.jpg" class="img-fluid" alt="" />
-												</div>
-												<div class="hoverable-img">
+
+											<a href="{{ route('sku', [$bestSku->product->category->code, $bestSku->product->code, $bestSku]) }}">
+
+												<div class="thumbnail">
+
+													<div class="product-img">
+														<img src="{{ Storage::url($bestSku->product->image) }}" class="img-fluid" alt="{{ $bestSku->product->name }}" />
+													</div>
+													<!-- <div class="hoverable-img">
 													<img src="/images/product_01b.jpg" alt="" />
-												</div>
-												<div class="label"><span>-32%</span></div>
-												<div class="actions">
+												</div> -->
+													<div class="label"><span>-32%</span></div>
+													<!-- <div class="actions">
 													<ul>
 														<li class="nav-item">
 															<a href="#0" class="nav-link"><i class="ri-star-line"></i></a>
@@ -100,15 +106,25 @@
 															<a href="#0" class="nav-link"><i class="ri-eye-line"></i></a>
 														</li>
 													</ul>
+												</div> -->
+
 												</div>
-											</div>
-											<div class="product-detalis text-center">
-												<h4>The Sweater in Tosca</h4>
-												<span class="discount">$62.00</span>
-												<span class="current">$45.00</span>
-											</div>
+
+
+
+												<div class="product-detalis text-center">
+													<h4>{{ $bestSku->product->name }}</h4>
+													<!-- <span class="discount">$62.00</span> -->
+													<span class="current">{{ $bestSku->price }} {{ $currencySymbol }}</span>
+												</div>
+
+											</a>
+
 										</div>
-										<div class="col-2">
+
+										@endforeach
+
+										<!-- <div class="col-2">
 											<div class="thumbnail">
 												<a href="#0"></a>
 												<div class="product-img">
@@ -137,37 +153,8 @@
 												<span class="discount">$62.00</span>
 												<span class="current">$45.00</span>
 											</div>
-										</div>
-										<div class="col-2">
-											<div class="thumbnail">
-												<a href="#0"></a>
-												<div class="product-img">
-													<img src="/images/product_03.jpg" class="img-fluid" alt="" />
-												</div>
-												<div class="hoverable-img">
-													<img src="/images/product_03b.jpg" alt="" />
-												</div>
-												<div class="label"><span>-32%</span></div>
-												<div class="actions">
-													<ul>
-														<li class="nav-item">
-															<a href="#0" class="nav-link"><i class="ri-star-line"></i></a>
-														</li>
-														<li class="nav-item">
-															<a href="#0" class="nav-link"><i class="ri-arrow-left-right-line"></i></a>
-														</li>
-														<li class="nav-item">
-															<a href="#0" class="nav-link"><i class="ri-eye-line"></i></a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="product-detalis text-center">
-												<h4>The Sweater in Tosca</h4>
-												<span class="discount">$62.00</span>
-												<span class="current">$45.00</span>
-											</div>
-										</div>
+										</div> -->
+
 										<div class="col-2 ps-5">
 											<h6>Apprel</h6>
 											<ul class="sub-link">
