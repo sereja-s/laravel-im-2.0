@@ -34,7 +34,7 @@ class ViewServiceProvider extends ServiceProvider
 		View::composer(['layouts.master', 'categories'], 'App\ViewComposers\CategoriesComposer');
 
 		// +ч.31: ViewComposer, Collection (map, flatten, take, mapToGroups)
-		View::composer(['layouts.master'], 'App\ViewComposers\CurrenciesComposer');
+		View::composer(['layouts.master', 'auth.coupons.form'], 'App\ViewComposers\CurrenciesComposer');
 
 		View::composer(['layouts.master', 'index'], 'App\ViewComposers\BestProductsComposer');
 

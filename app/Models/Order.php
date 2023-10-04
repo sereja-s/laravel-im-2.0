@@ -9,7 +9,8 @@ class Order extends Model
 {
 	use HasFactory;
 
-	protected $fillable = ['user_id', 'currency_id', 'sum'];
+	//+ч.38: Функционал купонов - админка
+	protected $fillable = ['user_id', 'currency_id', 'sum', 'coupon_id'];
 
 	/** 
 	 * Метод реализует связь заказов с продуктами
@@ -18,7 +19,7 @@ class Order extends Model
 	//{
 	// обращаемся к модели: Product (реализуем связь: многие-ко-многим через связующую таблицу: order_product) 
 	// Далее обращаемся к полю связующей таблицы: count (теперь сможем работать с этим полем в контроллере: BasketController)
-	// Также укажем что в связующей таблице нужно обновлять поля: created_at, updated_at
+	// Также укажем что в связующей таблице нужно обновлять поля: created_at, updated_at - withTimestamps()
 	//return $this->belongsToMany(Product::class)->withPivot(['count', 'price'])->withTimestamps();
 	//}
 
@@ -37,6 +38,15 @@ class Order extends Model
 	public function currency()
 	{
 		return $this->belongsTo(Currency::class);
+	}
+
+	/** 
+	 * Метод реализует связь заказа с купоном (один-к-одному)
+	 * (ч.38: Функционал купонов - админка)
+	 */
+	public function coupon()
+	{
+		return $this->belongsTo(Coupon::class);
 	}
 
 	/** 
@@ -65,12 +75,15 @@ class Order extends Model
 		return $sum;
 	}
 
+
+
 	/** 
 	 * Метод получает сумму зказа из сессии 
 	 * (ч.7: Pivot table)
 	 * (+ч.20: Scope, Оптимизация запросов к БД)
+	 * На вход: 1- флаг(по умолчанию используем купон) ч.39: Функционал купонов - реализация корзины
 	 */
-	public function getFullSum()
+	public function getFullSum($withCoupon = true)
 	{
 		// +ч.30: Collection, Объект Eloquent без сохранения
 		$sum = 0;
@@ -78,6 +91,13 @@ class Order extends Model
 		// Laravel: интернет магазин ч.35: Eloquent: whereHas
 		foreach ($this->skus as $sku) {
 			$sum += $sku->price * $sku->countInOrder;
+		}
+
+		// ч.39: Функционал купонов - реализация корзины
+		if ($withCoupon && $this->hasCoupon()) {
+
+			// посчитаем сумму заказа за вычетом номинальной стоимости купона, используя метод модели: Coupon
+			$sum = $this->coupon->applyCost($sum, $this->currency);
 		}
 
 		return $sum;
@@ -139,5 +159,14 @@ class Order extends Model
 
 			return false;
 		} */
+	}
+
+	/** 
+	 * Метод проверяет есть ли купон
+	 * (ч.39: Функционал купонов - реализация корзины)
+	 */
+	public function hasCoupon()
+	{
+		return $this->coupon;
 	}
 }

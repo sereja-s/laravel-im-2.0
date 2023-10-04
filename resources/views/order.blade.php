@@ -46,11 +46,11 @@
 						<label for="" class="form-label">Адрес</label>
 						<textarea class="form-control" name="address" placeholder="Адрес доставки"></textarea>
 					</div> -->
-					<div class="subtotal-section">
+					<!-- <div class="subtotal-section">
 						<ul>
 							<li><input type="radio" id="account" /> <label for="account">Create an account?</label></li>
 						</ul>
-					</div>
+					</div> -->
 					@csrf
 
 					<div class="checkout-box mt-4">
@@ -63,9 +63,9 @@
 			</div>
 		</div>
 		<div class="col-lg-6 col-12 ps-lg-5">
-			<div class="order-summary">
+			<!-- <div class="order-summary">
 				<h3 class="mb-5">Order Summary</h3>
-				<!-- item 1 -->
+				
 				<div class="item">
 					<div class="d-flex">
 						<div class="order-img">
@@ -80,7 +80,7 @@
 						</div>
 					</div>
 				</div>
-				<!-- item 2 -->
+				
 				<div class="item">
 					<div class="d-flex">
 						<div class="order-img">
@@ -95,7 +95,7 @@
 						</div>
 					</div>
 				</div>
-				<!-- item 3 -->
+				
 				<div class="item">
 					<div class="d-flex">
 						<div class="order-img">
@@ -110,9 +110,10 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
+
 			<div class="payment-section">
-				<div class="payment-method">
+				<!-- <div class="payment-method">
 					<span>Select Payment</span>
 					<ul class="d-flex justify-content-center align-items-center">
 						<li>
@@ -128,47 +129,83 @@
 							<label for="cod"><i class="ri-hand-coin-line"></i></label>
 						</li>
 					</ul>
-				</div>
+					</div> -->
+
+				@if(!$order->hasCoupon())
+
 				<div class="coupon-section mb-4">
-					<input type="text" class="form-control" placeholder="Coupon" />
-					<div class="button">
-						<button class="coupon-btn" type="submit">Apply</button>
-					</div>
+
+					<form method="POST" action="{{ route('set-coupon') }}">
+						@csrf
+
+						<input type="text" name="coupon" class="form-control" placeholder="введите ваш купон" />
+						<div class="button">
+							<button class="coupon-btn" type="submit">Применить</button>
+						</div>
+
+					</form>
+
 				</div>
+
+				@error('coupon')
+
+				<div class="alert alert-danger">{{ $message }}</div>
+
+				@enderror
+
+				@else
+
+				<h4 style="color: white; ">Вы используете купон: {{ $order->coupon->code }}</h4>
+
+				@endif
+
 				<div class="subtotal-section mt-3">
+
+					@if($order->hasCoupon())
+
 					<div class="d-flex justify-content-between align-items-center">
-						<span class="subtotal">Стоимость заказа</span>
-						<span>{{ $order->getFullSum() }} {{ $currencySymbol }}</span>
+						<span class="subtotal">Стоимость заказа:</span>
+						<span>{{ $order->getFullSum(false) }} {{ $currencySymbol }}</span>
 					</div>
+
 					<div class="d-flex justify-content-between align-items-center">
-						<span class="tax">Tex</span>
-						<span>$14.00</span>
+						<span class="tax">Скидка по купону:</span>
+						<span>{{ $order->coupon->value }} @if($order->coupon->isAbsolute()) {{ $currencySymbol }} @else % @endif</span>
 					</div>
-					<ul class="">
-						<span class="shipping">Shipping</span>
-						<li class="d-flex justify-content-between mb-1 ps-3">
-							<div>
-								<input type="radio" id="free" name="shipping" />
-								<label for="free">Free</label>
-							</div>
-							<span class="">$0.00</span>
-						</li>
-						<li class="d-flex justify-content-between mb-1 ps-3">
-							<div>
-								<input type="radio" id="flat" name="shipping" />
-								<label for="flat">Flat</label>
-							</div>
-							<span class="">$10.00</span>
-						</li>
-						<li class="d-flex justify-content-between mb-1">
-							<span>Promo discount</span>
-							<span>-$0.00</span>
-						</li>
-					</ul>
+					<!-- <ul class="">
+							<span class="shipping">Shipping</span>
+							<li class="d-flex justify-content-between mb-1 ps-3">
+								<div>
+									<input type="radio" id="free" name="shipping" />
+									<label for="free">Free</label>
+								</div>
+								<span class="">$0.00</span>
+							</li>
+							<li class="d-flex justify-content-between mb-1 ps-3">
+								<div>
+									<input type="radio" id="flat" name="shipping" />
+									<label for="flat">Flat</label>
+								</div>
+								<span class="">$10.00</span>
+							</li>
+							<li class="d-flex justify-content-between mb-1">
+								<span>Promo discount</span>
+								<span>-$0.00</span>
+							</li>
+						</ul> -->
 					<div class="total d-flex justify-content-between">
 						<span>Total</span>
-						<span>$161.00</span>
+						<span>{{ $order->getFullSum() }} {{ $currencySymbol }}</span>
 					</div>
+
+					@else
+
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="subtotal">Стоимость заказа:</span>
+						<span>{{ $order->getFullSum() }} {{ $currencySymbol }}</span>
+					</div>
+
+					@endif
 					<!-- <div class="checkout-box mt-4">
 						<div class="button">
 							<a href="#0" class="ocean-btn">Заказать</a>
@@ -176,6 +213,9 @@
 					</div> -->
 				</div>
 			</div>
+
+
+
 		</div>
 	</div>
 </section>

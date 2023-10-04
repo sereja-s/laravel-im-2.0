@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Basket;
+use App\Http\Requests\AddCouponRequest;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Sku;
@@ -225,11 +227,24 @@ class BasketController extends Controller
 		// весь описанный функционал перенесли в модель: Order
 		//$success = $order->saveOrder($request->name, $request->phone);
 
+		// ч.39: Функционал купонов - реализация корзины
+		$basket = new Basket();
+
+		// если купон есть и он не доступен для использования
+		if ($basket->getOrder()->hasCoupon() && !$basket->getOrder()->coupon->availableForUse()) {
+			// удалим купон из заказа (используем метод класса: Basket)
+			$basket->clearCoupon();
+
+			session()->flash('warning', 'купон не доступен для использования');
+
+			return redirect()->route('basket-place');
+		}
+
 		// (+ч.24: Отправка Email)
 		$email = Auth::check() ? Auth::user()->email : $request->email;
 
 		// (+ч.23: Model Injection, new Class)
-		if ((new Basket())->saveOrder($request->name, $request->phone, $email)) {
+		if ($basket->saveOrder($request->name, $request->phone, $email)) {
 
 			// для показа сообщений используем функционал Flash (переменные внутри сессии, которые позволяют опсле первого отображения их удалять)
 			session()->flash('success', 'Ваш заказ принят в обработку');
@@ -246,5 +261,24 @@ class BasketController extends Controller
 		//Order::eraseOrderSum();
 
 		return redirect()->route('index');
+	}
+
+	public function setCoupon(AddCouponRequest $request)
+	{
+		// находим купон с кодом указанным в запросе от прльзователя
+		$coupon = Coupon::where('code', $request->coupon)->first();
+
+		// убедимся что купон доступен используя метод модели: Coupon
+		if ($coupon->availableForUse()) {
+
+			// получим корзину и добавим в неё найденый купон
+			(new Basket())->setCoupon($coupon);
+
+			session()->flash('success', 'Купон был добавлен к заказу');
+		} else {
+			session()->flash('warning', 'Купон не может быть использован');
+		}
+
+		return redirect()->route('basket-place');
 	}
 }

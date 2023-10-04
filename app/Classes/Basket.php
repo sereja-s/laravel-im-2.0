@@ -3,6 +3,7 @@
 namespace App\Classes;
 
 use App\Mail\OrderCreated;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Sku;
@@ -198,6 +199,24 @@ class Basket
 				$pivotRow->countInOrder--;
 			}
 		}
+	}
+
+	/** 
+	 * Метод будет добавлять купон
+	 * (ч.39: Функционал купонов - реализация корзины)
+	 */
+	public function setCoupon(Coupon $coupon)
+	{
+		$this->order->coupon()->associate($coupon);
+	}
+
+	/** 
+	 * Метод отсоединит купон от заказа
+	 * (ч.39: Функционал купонов - реализация корзины)
+	 */
+	public function clearCoupon()
+	{
+		$this->order->coupon()->dissociate();
 	}
 
 

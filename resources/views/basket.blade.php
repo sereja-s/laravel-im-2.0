@@ -102,9 +102,9 @@
 @section('section-page')
 
 <!-- Single-Product Navtab section start here -->
-<section class="navtab-section">
+<!-- <section class="navtab-section">
 	<div class="container">
-		<!-- <div class="item"> -->
+		
 		<ul class="tab-navigation">
 			<li class="active"><a href="#0" data-tab="tab1">Product details</a></li>
 			<li><a href="#0" data-tab="tab2">Custom</a></li>
@@ -116,7 +116,7 @@
 			</li>
 			<li><a href="#0" data-tab="tab4">Shipping</a></li>
 		</ul>
-		<!-- </div> -->
+		
 
 		<div class="">
 			<div class="tab-list">
@@ -237,18 +237,18 @@
 			</div>
 		</div>
 	</div>
-</section>
+</section> -->
 <!-- Carousel Section copy from home page -->
-<section class="carousel-section section-wrapper">
+<!-- <section class="carousel-section section-wrapper">
 	<div class="container">
 		<div class="row">
 			<h2 class="text-center">New Arrivals</h2>
 		</div>
 		<div class="carousel-wrapper">
 			<div class="swiper carousel-box">
-				<!-- Additional required wrapper -->
+
 				<div class="swiper-wrapper">
-					<!-- Slides -->
+
 					<div class="swiper-slide">
 						<div class="">
 							<div class="thumbnail">
@@ -466,7 +466,7 @@
 						</div>
 					</div>
 				</div>
-				<!-- If we need navigation buttons -->
+
 				<div class="nav">
 					<div class="swiper-button-next">
 						<i class="ri-arrow-right-line"></i>
@@ -478,6 +478,6 @@
 			</div>
 		</div>
 	</div>
-</section>
+</section> -->
 
 @endsection

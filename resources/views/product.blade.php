@@ -161,7 +161,9 @@
 
 							@if($skus->isAvailable())
 
-							<form action="{{ route('basket-add', $skus->product) }}" method="POST">
+
+
+							<form action="{{ route('basket-add', $skus->id) }}" method="POST">
 
 								<button type="submit" class="btn-addcart">В корзину</button>
 

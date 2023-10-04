@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PropertyController;
@@ -73,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
 			Route::resource('products', ProductController::class);
 			Route::resource('products/{product}/skus', SkuController::class);
 			Route::resource('properties', PropertyController::class);
+			Route::resource('coupons', CouponController::class);
 			Route::resource('properties/{property}/property-options', PropertyOptionController::class);
 		});
 	});
@@ -106,9 +108,10 @@ Route::group(['prefix' => 'basket'], function () {
 		Route::get('/', [BasketController::class, 'basket'])->name('basket');
 		Route::get('/place', [BasketController::class, 'basketPlace'])->name('basket-place');
 
-
 		Route::post('/remove/{skus}', [BasketController::class, 'basketRemove'])->name('basket-remove');
 		Route::post('/confirm', [BasketController::class, 'basketConfirm'])->name('basket-confirm');
+
+		Route::post('coupon', [BasketController::class, 'setCoupon'])->name('set-coupon');
 	});
 });
 
