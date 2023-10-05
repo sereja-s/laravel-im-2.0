@@ -15,12 +15,21 @@ class Sku extends Model
 	// ч.32: Товарные предложения
 	protected $fillable = ['product_id', 'count', 'price'];
 
+	// поля которые мы хотим видеть(ч.40: RouteServiceProvider, response JSON)
+	protected $visible = ['id', 'count', 'price', 'product_name'];
+
 	/** 
 	 * Метод реализующий связь товарного предложения с продуктом
 	 */
 	public function product()
 	{
 		return $this->belongsTo(Product::class);
+	}
+
+	// ч.40: RouteServiceProvider, response JSON
+	public function scopeAvailable($query)
+	{
+		return $query->where('count', '>', 0);
 	}
 
 	/** 
@@ -64,6 +73,7 @@ class Sku extends Model
 		return round(CurrencyConversion::convert($value), 2);
 	}
 
+	// ч.40: RouteServiceProvider, response JSON
 	public function getProductNameAttribute()
 	{
 		return $this->product->name;

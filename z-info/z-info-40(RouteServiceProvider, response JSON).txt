@@ -1,0 +1,41 @@
+1. php artisan make:controller Api/SkusController
+
+2. <?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Sku;
+use Illuminate\Http\Request;
+
+//ч.40: RouteServiceProvider, response JSON
+
+class SkusController extends Controller
+{
+	public function getSkus()
+	{
+		return Sku::with('product')
+			->available()
+			->get()
+			->append('product_name');
+	}
+}
+
+3. Добавим запись в файл: routes/api.php 
+	Route::get('skus', [SkusController::class, 'getSkus']);
+
+4. В модель: Sku добавим
+	public function scopeAvailable($query)
+	{
+		return $query->where('count', '>', 0);
+	}
+
+	// ч.40: RouteServiceProvider, response JSON
+	public function getProductNameAttribute()
+	{
+		return $this->product->name;
+	}
+
+	protected $visible = ['id', 'count', 'price', 'product_name'];
+
+	5. По адресу: http://127.0.0.1:8000/api/skus получим данные по товарам с названием ценой и кол-вом

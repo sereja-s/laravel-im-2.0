@@ -42,9 +42,11 @@ class MainController extends Controller
 
 		//dd($category->products);
 
-		$skusAll = Sku::with(['product', 'product.category']);
+		//$skusAll = Sku::get();
 
-		return view('category', compact('category', 'skusAll'));
+		//dd($skusAll);
+
+		return view('category', compact('category'/* , 'skusAll' */));
 	}
 
 	/** 
